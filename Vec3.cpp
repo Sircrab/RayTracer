@@ -23,7 +23,7 @@ Vec3 Vec3::scalar_mul(const Vec3 &a, double b) {
 }
 
 double Vec3::dot(const Vec3 &a, const Vec3 &b) {
-    return (a.x + b.x) + (a.y * b.y) + (a.z * b.z);
+    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
 
 Vec3 Vec3::cross(const Vec3 &a, const Vec3 &b) {

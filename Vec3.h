@@ -9,6 +9,7 @@ class Vec3{
 public:
     double x,y,z;
     Vec3(double x, double y, double z) : x(x),y(y),z(z){};
+    Vec3() : x(0), y(0), z(0) {};
     static Vec3 add(const Vec3& a, const Vec3& b);
     static Vec3 sub(const Vec3& a, const Vec3& b);
     static Vec3 mul(const Vec3& a, const Vec3& b);

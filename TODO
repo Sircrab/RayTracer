@@ -1,0 +1,8 @@
+Separate lodepng (and any other libs) via their own CMakeLists
+Create Vec4 - DONE (no cross)
+Use Smart Pointers instead of Raw Pointers
+Find JSON parsing libs
+Create Ray class (Complete with Sphere intersection test)
+Parse program parameters
+Create Camera class (set up up, bottom, left, right)
+Build main loop (for each pixel calculate directions, check collision, write color, output image).

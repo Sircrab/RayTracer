@@ -29,7 +29,7 @@ SceneParams parse_scene(){
 }
 
 RenderParams parse_params(){
-  RenderParams r(256,256,"meme.png","meme");
+  RenderParams r(256,128,"meme.png","meme");
   return r;
 }
 
@@ -41,13 +41,12 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
     for(int j = 0 ; j < preImage[0].size(); j++){
       double i_u = cam.get_left() + ((cam.get_right() - cam.get_left())/renderParams.width)*(i + 0.5);
       double j_v = cam.get_bottom() + ((cam.get_top() - cam.get_bottom())/renderParams.height)*(j + 0.5);
-      Vec3 pixDir = cam.cam_pos + cam.get_u() * i_u + cam.get_v() * j_v + cam.get_w() * -0.1; //NEAR ASSUMED 0.1
+      Vec3 pixDir = cam.get_u() * i_u + cam.get_v() * j_v + cam.get_w() * -0.1; //NEAR ASSUMED 0.1
       Ray pixRay(cam.cam_pos,pixDir);
       bool hit = false;
       for(auto const& sphere : (*sceneParams.scene_objs)){
         Vec3 out;
         if(hit |= pixRay.intersect_sphere(sphere,out)){
-          std::cout << "Found hit at " << i << " " << j << std::endl;
           preImage[i][j] = Pixel{0,0,0,255};
         }
       }
@@ -59,10 +58,10 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
   unsigned char* img = new unsigned char[renderParams.width * renderParams.height * 4];
   for(int i = 0 ; i < renderParams.width; i++){
     for(int j = 0 ; j < renderParams.height; j++){
-      img[j * renderParams.width + i*4 + 0] = preImage[i][j].R;
-      img[j * renderParams.width + i*4 + 1] = preImage[i][j].G;
-      img[j * renderParams.width + i*4 + 2] = preImage[i][j].B;
-      img[j * renderParams.width + i*4 + 3] = preImage[i][j].A;
+      img[(j * renderParams.width + renderParams.width -1 - i)*4 + 0] = preImage[renderParams.width - 1 - i][renderParams.height - 1 - j].R;
+      img[(j * renderParams.width + renderParams.width -1 - i)*4 + 1] = preImage[renderParams.width - 1 - i][renderParams.height - 1 - j].G;
+      img[(j * renderParams.width + renderParams.width -1 - i)*4 + 2] = preImage[renderParams.width - 1 - i][renderParams.height - 1 - j].B;
+      img[(j * renderParams.width + renderParams.width -1 - i)*4 + 3] = preImage[renderParams.width - 1 - i][renderParams.height - 1 - j].A;
     }
   }
   std::cout << "Beggining png encode" << std::endl;

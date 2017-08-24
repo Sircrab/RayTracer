@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "Vec3.h"
 #include "Ray.h"
@@ -7,6 +8,8 @@
 #include "RenderParams.h"
 #include "Camera.h"
 #include "lodepng/lodepng.h"
+#include "cxxopts/cxxopts.hpp"
+#include "json/json.hpp"
 
 struct Pixel{
   unsigned char R;
@@ -15,21 +18,34 @@ struct Pixel{
   unsigned char A;
 };
 
-SceneParams parse_scene(){
+SceneParams parse_scene(RenderParams renderParams){
   SceneParams p;
-  p.cam_fov = 45;
-  p.cam_pos = Vec3(5,5,5);
-  p.cam_up = Vec3(0,1,0);
-  p.cam_target = Vec3(0.5,0.5,-0.5);
-  p.bg_color = Vec3(1,1,1);
-  p.add_sphere(Vec3(0,0,0),1);
-  p.add_sphere(Vec3(1.2,1.2,0),0.5);
-  p.add_sphere(Vec3(-1.5,0,0),0.3);
+  nlohmann::json j;
+  std::ifstream file(renderParams.json_file);
+  file >> j;
+  p.cam_fov = j["camera"]["fov"];
+  p.cam_pos = Vec3(j["camera"]["position"][0],j["camera"]["position"][1],j["camera"]["position"][2]);
+  p.cam_up = Vec3(j["camera"]["up"][0],j["camera"]["up"][1],j["camera"]["up"][2]);
+  p.cam_target = Vec3(j["camera"]["target"][0],j["camera"]["target"][1],j["camera"]["target"][2]);
+  p.bg_color = Vec3(j["params"]["background_color"][0],j["params"]["background_color"][1],j["params"]["background_color"][2]);
+  for(auto& elem : j["objects"]){
+    if(elem["__type__"] == "sphere"){
+      p.add_sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]),elem["radius"]);
+    }
+  }
+  file.close();
   return p;
 }
 
-RenderParams parse_params(){
-  RenderParams r(256,128,"meme.png","meme");
+RenderParams parse_params(int argc, char* argv[]){
+  cxxopts::Options options("RayTracer","Simple raytracer");
+  options.add_options()
+          ("w,width","Render width",cxxopts::value<unsigned int>())
+          ("h,height","Render height",cxxopts::value<unsigned int>())
+          ("s,scene","Scene description file",cxxopts::value<std::string>())
+          ("i,image","Image file output",cxxopts::value<std::string>());
+  options.parse(argc,argv);
+  RenderParams r(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),options["i"].as<std::string>(),options["s"].as<std::string>());
   return r;
 }
 
@@ -51,7 +67,9 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
         }
       }
       if(!hit){
-        preImage[i][j] = Pixel{255,255,255,255};
+        preImage[i][j] = Pixel{(unsigned char)(sceneParams.bg_color.x*255),
+                               (unsigned char)(sceneParams.bg_color.y*255),
+                               (unsigned char)(sceneParams.bg_color.z*255),255};
       }
     }
   }
@@ -68,13 +86,14 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
   unsigned error = lodepng_encode32_file(renderParams.img_title.c_str(),img,renderParams.width,renderParams.height);
   std::cout << "Png encode finished" << std::endl;
   if(error) std::cout << lodepng_error_text(error) << std::endl;
+  delete img;
 }
 
 
 
-int main() {
-  RenderParams renderParams = parse_params();
-  SceneParams sceneParams = parse_scene();
+int main(int argc, char* argv[]) {
+  RenderParams renderParams = parse_params(argc, argv);
+  SceneParams sceneParams = parse_scene(renderParams);
   do_render(sceneParams, renderParams);
   return 0;
 }

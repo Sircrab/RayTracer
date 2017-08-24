@@ -1,8 +1,16 @@
+----- PART 1: Phantom Render ----
 Separate lodepng (and any other libs) via their own CMakeLists
 Create Vec4 - DONE (no cross)
 Use Smart Pointers instead of Raw Pointers
-Find JSON parsing libs
+Find JSON parsing libs DONE
 Create Ray class (Complete with Sphere intersection test) DONE
-Parse program parameters
-Create Camera class (set up up, bottom, left, right)
-Build main loop (for each pixel calculate directions, check collision, write color, output image).
+Parse program parameters DONE
+Create Camera class (set up up, bottom, left, right) DONE
+Build main loop (for each pixel calculate directions, check collision, write color, output image). DONE
+---- Part 2: Render Tendency ----
+Parse additional parameters in scene (lights), create respective classes/structs
+Parse resources, this creates a materials library.
+Create materials class, render loop static, the rest in instance.
+Create color class adapter for Vec3. DONE
+Update the render loop.
+Make Cmakelists prettier.

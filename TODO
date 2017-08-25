@@ -14,3 +14,4 @@ Create materials class, render loop static, the rest in instance.
 Create color class adapter for Vec3. DONE
 Update the render loop.
 Make Cmakelists prettier.
+DEPTH TEST

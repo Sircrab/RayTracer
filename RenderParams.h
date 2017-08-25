@@ -10,8 +10,9 @@ struct RenderParams{
     unsigned int height;
     std::string img_title;
     std::string json_file;
-    RenderParams(unsigned int width, unsigned int height, std::string img_title, std::string json_file) :
-            width(width), height(height), img_title(img_title), json_file(json_file){};
-    RenderParams(std::string json_file) : width(512), height(height), img_title("render_res"), json_file(json_file){};
+    std::string resources_file;
+    RenderParams(unsigned int width, unsigned int height, std::string img_title,
+                 std::string json_file, std::string resources_file) :
+            width(width), height(height), img_title(img_title), json_file(json_file), resources_file(resources_file){};
 };
 #endif //RAYTRACER_RENDERPARAMS_H

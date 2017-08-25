@@ -7,10 +7,10 @@
 #include <vector>
 #include <memory>
 #include "Vec3.h"
-#include "Sphere.h"
+#include "SceneObject.h"
 class SceneParams{
 public:
-    std::vector<Sphere>* scene_objs;
+    std::vector<SceneObject>* scene_objs;
     Vec3 bg_color;
     Vec3 cam_pos;
     Vec3 cam_up;
@@ -20,6 +20,6 @@ public:
     SceneParams(const SceneParams& other);
     ~SceneParams();
     SceneParams& operator= (const SceneParams& other);
-    void add_sphere(Vec3 center, double radius);
+    void add_object(const SceneObject& object);
 };
 #endif //RAYTRACER_SCENEPARAMS_H

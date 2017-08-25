@@ -10,6 +10,7 @@
 #include "lodepng/lodepng.h"
 #include "cxxopts/cxxopts.hpp"
 #include "json/json.hpp"
+#include "SceneMaterials.h"
 
 struct Pixel{
   unsigned char R;
@@ -18,7 +19,7 @@ struct Pixel{
   unsigned char A;
 };
 
-SceneParams parse_scene(RenderParams renderParams){
+SceneParams parse_scene(RenderParams renderParams, SceneMaterials sceneMaterials){
   SceneParams p;
   nlohmann::json j;
   std::ifstream file(renderParams.json_file);
@@ -30,7 +31,11 @@ SceneParams parse_scene(RenderParams renderParams){
   p.bg_color = Vec3(j["params"]["background_color"][0],j["params"]["background_color"][1],j["params"]["background_color"][2]);
   for(auto& elem : j["objects"]){
     if(elem["__type__"] == "sphere"){
-      p.add_sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]),elem["radius"]);
+      SceneObject curObj(Sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]), elem["radius"]));
+      for(auto& mats : elem["materials"]){
+        curObj.attach_material((sceneMaterials.materials)[mats]);
+      }
+      p.add_object(curObj);
     }
   }
   file.close();
@@ -43,10 +48,34 @@ RenderParams parse_params(int argc, char* argv[]){
           ("w,width","Render width",cxxopts::value<unsigned int>())
           ("h,height","Render height",cxxopts::value<unsigned int>())
           ("s,scene","Scene description file",cxxopts::value<std::string>())
-          ("i,image","Image file output",cxxopts::value<std::string>());
+          ("i,image","Image file output",cxxopts::value<std::string>())
+          ("r,resources", "Scene objects Resources", cxxopts::value<std::string>());
   options.parse(argc,argv);
-  RenderParams r(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),options["i"].as<std::string>(),options["s"].as<std::string>());
+  RenderParams r(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),
+          options["i"].as<std::string>(),options["s"].as<std::string>(),options["r"].as<std::string>());
   return r;
+}
+
+SceneMaterials parse_materials(RenderParams renderParams){
+  SceneMaterials sceneMaterials;
+  nlohmann::json j;
+  std::ifstream file(renderParams.resources_file);
+  file >> j;
+  for(auto& elem : j["materials"]){
+    Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
+    std::string name = elem["name"];
+    bool isAmbient = false;
+    if(elem.count("use_for_ambient")){
+      isAmbient = elem["use_for_ambient"];
+    }
+    if(elem["brdf"] == "lambert"){
+      sceneMaterials.add_material(name, std::make_shared<const LambertMaterial>(color,isAmbient));
+    } else if (elem["brdf"] == "blinnPhong"){
+      double shininess = elem["brdfParams"]["shininess"];
+      sceneMaterials.add_material(name, std::make_shared<const BlinnPhongMaterial>(color,shininess,isAmbient));
+    }
+  }
+  return sceneMaterials;
 }
 
 void do_render(SceneParams& sceneParams, RenderParams& renderParams){
@@ -60,9 +89,9 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
       Vec3 pixDir = cam.get_u() * i_u + cam.get_v() * j_v + cam.get_w() * -0.1; //NEAR ASSUMED 0.1
       Ray pixRay(cam.cam_pos,pixDir);
       bool hit = false;
-      for(auto const& sphere : (*sceneParams.scene_objs)){
+      for(auto const& curObj : (*sceneParams.scene_objs)){
         Vec3 out;
-        if(hit |= pixRay.intersect_sphere(sphere,out)){
+        if(hit |= pixRay.intersect_sphere(curObj.sphere,out)){
           preImage[i][j] = Pixel{0,0,0,255};
         }
       }
@@ -83,6 +112,7 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
     }
   }
   std::cout << "Beggining png encode" << std::endl;
+  //THIS IS THE C VERSION, PLEASE CHANGE
   unsigned error = lodepng_encode32_file(renderParams.img_title.c_str(),img,renderParams.width,renderParams.height);
   std::cout << "Png encode finished" << std::endl;
   if(error) std::cout << lodepng_error_text(error) << std::endl;
@@ -93,8 +123,9 @@ void do_render(SceneParams& sceneParams, RenderParams& renderParams){
 
 int main(int argc, char* argv[]) {
   RenderParams renderParams = parse_params(argc, argv);
-  SceneParams sceneParams = parse_scene(renderParams);
-  do_render(sceneParams, renderParams);
+  SceneMaterials sceneMaterials = parse_materials(renderParams);
+  SceneParams sceneParams = parse_scene(renderParams, sceneMaterials);
+  //do_render(sceneParams, renderParams);
   return 0;
 }
 

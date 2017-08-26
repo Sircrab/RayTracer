@@ -6,6 +6,7 @@
 #include "json/json.hpp"
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 RenderParams Parser::parse_params(int argc, char **argv) {
   cxxopts::Options options("RayTracer","Simple raytracer");
@@ -63,6 +64,12 @@ SceneParams Parser::parse_scene(RenderParams renderParams, SceneMaterials sceneM
       p.add_object(curObj);
     }
   }
+  //SORT
+  std::sort(p.sceneObjs.begin(),p.sceneObjs.end(),
+            [&](const std::shared_ptr<SceneObject> obj1, std::shared_ptr<SceneObject> obj2) -> bool{
+                return (obj1->sphere.center - p.cam_pos).magnitude() < (obj2->sphere.center - p.cam_pos).magnitude();
+            }
+  );
   for(auto& elem : j["lights"]){
     if(elem["__type__"] == "point_light"){
       Vec3 pos(elem["position"][0],elem["position"][1],elem["position"][2]);
@@ -83,7 +90,7 @@ SceneParams Parser::parse_scene(RenderParams renderParams, SceneMaterials sceneM
       std::shared_ptr<const AmbientLight> ambLight = std::make_shared<const AmbientLight>(color);
       p.add_light(ambLight);
       //First ambient light assumed for scene.
-      if(p.sceneAmbientLight != nullptr){
+      if(p.sceneAmbientLight == nullptr){
         p.sceneAmbientLight = ambLight;
       }
     }

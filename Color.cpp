@@ -4,7 +4,7 @@
 
 #include "Color.h"
 
-Color::Color() : color(0,0,0){}
+Color::Color() : color(0.0,0.0,0.0){}
 
 Color::Color(double r, double g, double b) : color(r,g,b) {}
 
@@ -29,34 +29,39 @@ Color Color::scalar_mul(const Color &a, double lambda) {
   return Color(lambda * a.color.x, lambda * a.color.y, lambda * a.color.z).clamp();
 }
 
-Color Color::operator+(const Color &other) {
+Color Color::operator+(const Color &other) const{
   return add(*this,other);
 }
 
-Color Color::operator-(const Color &other) {
+Color Color::operator-(const Color &other) const{
   return sub(*this,other);
 }
 
-Color Color::operator*(const Color &other) {
+Color Color::operator*(const Color &other) const{
   return mul(*this,other);
 }
 
-Color Color::operator*(double lambda) {
+Color Color::operator*(double lambda) const{
   return scalar_mul(*this,lambda);
+}
+
+Color& Color::operator+=(const Color& other) {
+  this->color = ((*this) + other).color;
+  return *this;
 }
 
 Color Color::clamp(){
   return clamp(*this);
 }
 
-double Color::r(){
+double Color::r() const{
   return color.x;
 }
 
-double Color::g(){
+double Color::g() const{
   return color.y;
 }
 
-double Color::b(){
+double Color::b() const{
   return color.z;
 }

@@ -13,10 +13,12 @@ public:
     Color baseColor;
     bool isAmbient;
     //THESE ONLY HANDLE DIRECT LIGHTING ( NOT AMBIENT)
-    virtual Color get_color_from(PointLight pointLight, Camera camera, Sphere sphere, Vec3 rayHit) const=0;
-    virtual Color get_color_from(DirectionalLight directionalLight, Camera camera, Sphere sphere, Vec3 rayHit) const=0;
-    virtual Color get_color_from(SpotLight spotLight, Camera camera, Sphere sphere, Vec3 rayHit) const=0;
-    virtual Color get_color_from(AmbientLight ambientLight, Camera camera, Sphere sphere, Vec3 rayHit) const=0;
+    virtual Color get_color_from(const PointLight &pointLight, const Camera &camera, const Sphere &sphere,
+                                 const Vec3 &rayHit) const=0;
+    virtual Color get_color_from(const DirectionalLight &directionalLight, const Camera &camera, const Sphere &sphere,
+                                 const Vec3 &rayHit) const=0;
+    virtual Color get_color_from(const SpotLight &spotLight, const Camera &camera, const Sphere &sphere,
+                                 const Vec3 &rayHit) const=0;
 protected:
     Material(Color baseColor, bool isAmbient): baseColor(baseColor), isAmbient(isAmbient){};
 };
@@ -24,10 +26,10 @@ protected:
 class LambertMaterial : public Material{
 public:
     LambertMaterial(Color baseColor, bool isAmbient = false): Material(baseColor, isAmbient) {};
-    Color get_color_from(PointLight pointLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
-    Color get_color_from(DirectionalLight directionalLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
-    Color get_color_from(SpotLight spotLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
-    Color get_color_from(AmbientLight ambientLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
+    Color get_color_from(const PointLight &pointLight, const Camera &camera, const Sphere &sphere, const Vec3 &rayHit) const override;
+    Color get_color_from(const DirectionalLight &directionalLight, const Camera &camera, const Sphere &sphere,
+                         const Vec3 &rayHit) const override;
+    Color get_color_from(const SpotLight &spotLight, const Camera &camera, const Sphere &sphere, const Vec3 &rayHit) const override;
 };
 
 class BlinnPhongMaterial : public Material{
@@ -35,9 +37,9 @@ public:
     double shininess;
     BlinnPhongMaterial(Color baseColor, double shininess, bool isAmbient = false):
             Material(baseColor, isAmbient), shininess(shininess){};
-    Color get_color_from(PointLight pointLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
-    Color get_color_from(DirectionalLight directionalLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
-    Color get_color_from(SpotLight spotLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
-    Color get_color_from(AmbientLight ambientLight, Camera camera, Sphere sphere, Vec3 rayHit) const override;
+    Color get_color_from(const PointLight &pointLight, const Camera &camera, const Sphere &sphere, const Vec3 &rayHit) const override;
+    Color get_color_from(const DirectionalLight &directionalLight, const Camera &camera, const Sphere &sphere,
+                         const Vec3 &rayHit) const override;
+    Color get_color_from(const SpotLight &spotLight, const Camera &camera, const Sphere &sphere, const Vec3 &rayHit) const override;
 };
 #endif //RAYTRACER_MATERIAL_H

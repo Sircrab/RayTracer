@@ -15,14 +15,15 @@ public:
     static Color sub(const Color& a, const Color& b);
     static Color mul(const Color& a, const Color& b);
     static Color scalar_mul(const Color& a, double lambda);
-    Color operator+(const Color& other);
-    Color operator-(const Color& other);
-    Color operator*(const Color& other);
-    Color operator*(double lambda);
+    Color operator+(const Color& other) const;
+    Color operator-(const Color& other) const;
+    Color operator*(const Color& other) const;
+    Color operator*(double lambda) const;
+    Color& operator+=(const Color&other);
     Color clamp();
-    double r();
-    double g();
-    double b();
+    double r() const;
+    double g() const;
+    double b() const;
 private:
     Vec3 color;
 };

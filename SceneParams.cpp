@@ -5,36 +5,13 @@
 
 SceneParams::SceneParams() :
         bg_color(Vec3(0,0,0)), cam_fov(0), cam_pos(Vec3(0,0,0)),
-        cam_up(Vec3(0,0,0)), cam_target(Vec3(0,0,0)){
-    this->scene_objs = new std::vector<SceneObject>();
+        cam_up(Vec3(0,0,0)), cam_target(Vec3(0,0,0)) {}
+
+void SceneParams::add_object(std::shared_ptr<SceneObject> sceneObject) {
+    sceneObjs.push_back(sceneObject);
 }
 
-SceneParams::~SceneParams() {
-    delete this->scene_objs;
+void SceneParams::add_light(std::shared_ptr<const Light> light){
+    sceneLights.push_back(light);
 }
 
-SceneParams::SceneParams(const SceneParams &other) :
-        bg_color(other.bg_color), cam_fov(other.cam_fov), cam_pos(other.cam_pos),
-        cam_up(other.cam_up), cam_target(other.cam_target){
-    this->scene_objs = new std::vector<SceneObject>();
-    for(int i = 0; i < other.scene_objs->size(); i++){
-        this->scene_objs[i].push_back((*other.scene_objs)[i]);
-    }
-}
-
-SceneParams& SceneParams::operator=(const SceneParams &other) {
-    this->bg_color = other.bg_color;
-    this->cam_up = other.cam_up;
-    this->cam_fov = other.cam_fov;
-    this->cam_pos = other.cam_pos;
-    this->cam_target = other.cam_target;
-    delete scene_objs;
-    this->scene_objs = new std::vector<SceneObject>();
-    for(int i = 0; i < other.scene_objs->size(); i++){
-        this->scene_objs[i].push_back((*other.scene_objs)[i]);
-    }
-}
-
-void SceneParams::add_object(const SceneObject& sceneObject) {
-    this->scene_objs->push_back(sceneObject);
-}

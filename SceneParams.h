@@ -8,18 +8,19 @@
 #include <memory>
 #include "Vec3.h"
 #include "SceneObject.h"
+#include "Lights.h"
 class SceneParams{
 public:
-    std::vector<SceneObject>* scene_objs;
+    std::vector<std::shared_ptr<SceneObject> > sceneObjs;
+    std::vector<std::shared_ptr<const Light> > sceneLights;
+    std::shared_ptr<const AmbientLight> sceneAmbientLight = nullptr;
     Vec3 bg_color;
     Vec3 cam_pos;
     Vec3 cam_up;
     Vec3 cam_target;
     double cam_fov;
     SceneParams();
-    SceneParams(const SceneParams& other);
-    ~SceneParams();
-    SceneParams& operator= (const SceneParams& other);
-    void add_object(const SceneObject& object);
+    void add_object(std::shared_ptr<SceneObject> object);
+    void add_light(std::shared_ptr<const Light> light);
 };
 #endif //RAYTRACER_SCENEPARAMS_H

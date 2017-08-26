@@ -24,6 +24,7 @@ public:
 };
 
 class SpotLight : public Light{
+public:
     Vec3 position, direction;
     double angle;
     Color color;
@@ -32,6 +33,7 @@ class SpotLight : public Light{
 };
 
 class AmbientLight : public Light{
+public:
     Color color;
     AmbientLight(Color color): color(color){};
 };

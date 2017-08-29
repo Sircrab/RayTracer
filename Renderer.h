@@ -8,12 +8,6 @@
 #include "SceneParams.h"
 #include "RenderParams.h"
 #include <memory>
-struct Pixel{
-    unsigned char R;
-    unsigned char G;
-    unsigned char B;
-    unsigned char A;
-};
 
 class Renderer{
 public:

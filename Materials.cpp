@@ -5,19 +5,19 @@
 #include <cmath>
 #include <iostream>
 
-Color LambertMaterial::get_color_from(const PointLight &pointLight, const Camera &camera, const Sphere &sphere,
+Color LambertMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const Sphere &sphere,
                                       const Vec3 &rayHit) const {
   Vec3 normal = (rayHit - sphere.center).normalize();
   Vec3 lightVec = (pointLight.position - rayHit).normalize();
   return pointLight.color * baseColor * std::max(0.0, normal.dot(lightVec));
 }
-Color LambertMaterial::get_color_from(const DirectionalLight &directionalLight, const Camera &camera,
+Color LambertMaterial::get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos,
                                       const Sphere &sphere, const Vec3 &rayHit) const {
   Vec3 normal = (rayHit - sphere.center).normalize();
   Vec3 lightVec = -directionalLight.direction.normalize();
   return directionalLight.color * baseColor * std::max(0.0, normal.dot(lightVec));
 }
-Color LambertMaterial::get_color_from(const SpotLight &spotLight, const Camera &camera, const Sphere &sphere,
+Color LambertMaterial::get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const Sphere &sphere,
                                       const Vec3 &rayHit) const {
   Vec3 lightVec = (rayHit - spotLight.position).normalize();
   Vec3 normal = (rayHit - sphere.center).normalize();
@@ -28,24 +28,24 @@ Color LambertMaterial::get_color_from(const SpotLight &spotLight, const Camera &
 }
 
 
-Color BlinnPhongMaterial::get_color_from(const PointLight &pointLight, const Camera &camera, const Sphere &sphere,
+Color BlinnPhongMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const Sphere &sphere,
                                          const Vec3 &rayHit) const {
-  Vec3 camVec = (camera.cam_pos - rayHit).normalize();
+  Vec3 camVec = (cameraPos - rayHit).normalize();
   Vec3 lightVec = (pointLight.position - rayHit).normalize();
   Vec3 normal = (rayHit - sphere.center).normalize();
   Vec3 hVec = (camVec + lightVec).normalize();
   return pointLight.color * baseColor * std::pow(std::max(0.0, normal.dot(hVec)), shininess);
 }
-Color BlinnPhongMaterial::get_color_from(const DirectionalLight &directionalLight, const Camera &camera,
+Color BlinnPhongMaterial::get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos,
                                          const Sphere &sphere, const Vec3 &rayHit) const {
-  Vec3 camVec = (camera.cam_pos - rayHit).normalize();
+  Vec3 camVec = (cameraPos - rayHit).normalize();
   Vec3 normal = (rayHit - sphere.center).normalize();
   Vec3 hVec = (camVec - directionalLight.direction.normalize()).normalize();
   return directionalLight.color * baseColor * std::pow(std::max(0.0, normal.dot(hVec)),shininess);
 }
-Color BlinnPhongMaterial::get_color_from(const SpotLight &spotLight, const Camera &camera, const Sphere &sphere,
+Color BlinnPhongMaterial::get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const Sphere &sphere,
                                          const Vec3 &rayHit) const {
-  Vec3 camVec = (camera.cam_pos - rayHit).normalize();
+  Vec3 camVec = (cameraPos - rayHit).normalize();
   Vec3 normal = (rayHit - sphere.center).normalize();
   Vec3 lightVec = (rayHit - spotLight.position).normalize();
   Vec3 hVec = (camVec - lightVec).normalize();

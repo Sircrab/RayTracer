@@ -12,6 +12,11 @@ Parse additional parameters in scene (lights), create respective classes/structs
 Parse resources, this creates a materials library. DONE
 Create materials class, render loop static, the rest in instance. DONE
 Create color class adapter for Vec3. DONE
-Update the render loop.
+DEPTH TEST DONE
 Make Cmakelists prettier.
-DEPTH TEST
+Renderer no longer as static object (Factory?)
+Support for multiple material types
+Update the render loop. Separate color calculations
+Calculate shadows
+Calculate reflections and refractions for those materials
+Folders!

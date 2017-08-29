@@ -10,7 +10,7 @@
 class Parser{
 public:
     static RenderParams parse_params(int argc, char* argv[]);
-    static SceneMaterials parse_materials(RenderParams renderParams);
-    static SceneParams parse_scene(RenderParams renderParams, SceneMaterials sceneMaterials);
+    static SceneMaterials parse_materials(RenderParams& renderParams);
+    static SceneParams parse_scene(RenderParams& renderParams, SceneMaterials& sceneMaterials);
 };
 #endif //RAYTRACER_PARSER_H

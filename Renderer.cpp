@@ -7,12 +7,10 @@
 #include "lodepng/lodepng.h"
 #include <iostream>
 
-void Renderer::do_render(SceneParams &sceneParams, RenderParams &renderParams, SceneMaterials &sceneMaterials) {
-  double near = 0.1; //NEAR ASSUMED 0.1
+void Renderer::do_render() {
   std::vector<std::vector<Pixel> > preImage(renderParams.width, std::vector<Pixel>(renderParams.height));
   Camera cam(sceneParams.cam_fov,sceneParams.cam_up,sceneParams.cam_pos,
              sceneParams.cam_target,renderParams.width,renderParams.height);
-  //ORDER THE OBJECTS
   Color bgColor(sceneParams.bg_color.x,sceneParams.bg_color.y,sceneParams.bg_color.z);
   for(int i = 0 ; i < preImage.size(); i++){
     for(int j = 0 ; j < preImage[0].size(); j++){
@@ -26,7 +24,7 @@ void Renderer::do_render(SceneParams &sceneParams, RenderParams &renderParams, S
         Vec3 out;
         if(hit |= pixRay.intersect_sphere(curObj->sphere,out)){
           for(auto const& light : sceneParams.sceneLights){
-            for(auto const& mat : curObj->materials){
+            for(auto const& mat : curObj->brdfMats){
               directColor += light->cast_on(*mat,cam,curObj->sphere,out);
             }
           }

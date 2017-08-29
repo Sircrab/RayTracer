@@ -22,7 +22,7 @@ RenderParams Parser::parse_params(int argc, char **argv) {
   return r;
 }
 
-SceneMaterials Parser::parse_materials(RenderParams renderParams) {
+SceneMaterials Parser::parse_materials(RenderParams& renderParams) {
   SceneMaterials sceneMaterials;
   nlohmann::json j;
   std::ifstream file(renderParams.resources_file);
@@ -30,21 +30,29 @@ SceneMaterials Parser::parse_materials(RenderParams renderParams) {
   for(auto& elem : j["materials"]){
     Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
     std::string name = elem["name"];
-    bool isAmbient = false;
-    if(elem.count("use_for_ambient")){
-      isAmbient = elem["use_for_ambient"];
-    }
-    if(elem["brdf"] == "lambert"){
-      sceneMaterials.add_material(name, std::make_shared<const LambertMaterial>(color,isAmbient));
-    } else if (elem["brdf"] == "blinnPhong"){
-      double shininess = elem["brdfParams"]["shininess"];
-      sceneMaterials.add_material(name, std::make_shared<const BlinnPhongMaterial>(color,shininess,isAmbient));
+    if(elem["__type__"] == "brdf_material"){
+      bool isAmbient = false;
+      if(elem.count("use_for_ambient")){
+        isAmbient = elem["use_for_ambient"];
+      }
+      if(elem["brdf"] == "lambert"){
+        sceneMaterials.add_brdf_material(name, std::make_shared<const LambertMaterial>(color,isAmbient));
+      } else if (elem["brdf"] == "blinnPhong"){
+        double shininess = elem["brdfParams"]["shininess"];
+        sceneMaterials.add_brdf_material(name, std::make_shared<const BlinnPhongMaterial>(color,shininess,isAmbient));
+      }
+    } else if(elem["__type__"] == "reflective_material"){
+      sceneMaterials.add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color));
+    } else if(elem["__type__" == "dielectric_material"]){
+      Color attenuation(elem["attenuation"][0],elem["attenuation"][1],elem["attenuation"][2]);
+      double refractionIdx = elem["refraction_index"];
+      sceneMaterials.add_dielectric_material(name,std::make_shared<const DielectricMaterial>(color,attenuation,refractionIdx));
     }
   }
   return sceneMaterials;
 }
 
-SceneParams Parser::parse_scene(RenderParams renderParams, SceneMaterials sceneMaterials) {
+SceneParams Parser::parse_scene(RenderParams& renderParams, SceneMaterials& sceneMaterials) {
   SceneParams p;
   nlohmann::json j;
   std::ifstream file(renderParams.json_file);
@@ -59,7 +67,13 @@ SceneParams Parser::parse_scene(RenderParams renderParams, SceneMaterials sceneM
       std::shared_ptr<SceneObject> curObj = std::make_shared<SceneObject>
               (Sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]), elem["radius"]));
       for(auto& mats : elem["materials"]){
-        curObj->attach_material(sceneMaterials.materials[mats]);
+        if(sceneMaterials.brdfMats.count(mats)){
+          curObj->attach_brdf_material(sceneMaterials.brdfMats[mats]);
+        } else if(sceneMaterials.reflectiveMats.count(mats)){
+          curObj->attach_reflective_material(sceneMaterials.reflectiveMats[mats]);
+        } else if(sceneMaterials.dielectricMats.count(mats)){
+          curObj->attach_dielectric_material(sceneMaterials.dielectricMats[mats]);
+        }
       }
       p.add_object(curObj);
     }

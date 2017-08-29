@@ -7,6 +7,7 @@
 #include "SceneMaterials.h"
 #include "SceneParams.h"
 #include "RenderParams.h"
+#include <memory>
 struct Pixel{
     unsigned char R;
     unsigned char G;
@@ -16,6 +17,13 @@ struct Pixel{
 
 class Renderer{
 public:
-    static void do_render(SceneParams& sceneParams, RenderParams& renderParams, SceneMaterials& sceneMaterials);
+    SceneParams sceneParams;
+    SceneMaterials sceneMaterials;
+    RenderParams renderParams;
+    Renderer(SceneParams sceneParams, SceneMaterials sceneMaterials ,RenderParams renderParams) :
+            sceneParams(sceneParams),sceneMaterials(sceneMaterials),renderParams(renderParams){};
+    void do_render();
+private:
+    static constexpr double near = 0.1;
 };
 #endif //RAYTRACER_RENDERER_H

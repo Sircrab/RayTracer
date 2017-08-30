@@ -22,15 +22,12 @@ void Renderer::do_render() {
       Vec3 pixDir = cam.get_u() * i_u + cam.get_v() * j_v + cam.get_w() * -near;
       Ray pixRay(cam.cam_pos,pixDir);
       Color finalColor;
-      bool hit = false;
-      for(auto const& curObj : sceneParams.sceneObjs){
-        Vec3 out;
-        if(hit |= pixRay.intersect_sphere(curObj->sphere,out)){
-          finalColor = colorizer.get_color(*curObj,out,0);
-          break;
-        }
-      }
-      if(!hit){
+      Vec3 out;
+      std::shared_ptr<const SceneObject> closestObj = nullptr;
+      bool hit = colorizer.get_closest_object(pixRay, out,closestObj);
+      if(hit){
+        finalColor = colorizer.get_color(*closestObj,out, sceneParams.cam_pos, 0);
+      } else {
        finalColor = bgColor;
       }
       preImage[i][j] = Pixel{(unsigned char)(finalColor.r()*255),

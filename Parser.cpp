@@ -83,12 +83,13 @@ SceneParams Parser::parse_scene(RenderParams& renderParams, SceneMaterials& scen
       p.add_object(curObj);
     }
   }
+  /*
   //SORT
   std::sort(p.sceneObjs.begin(),p.sceneObjs.end(),
             [&](const std::shared_ptr<SceneObject> obj1, std::shared_ptr<SceneObject> obj2) -> bool{
                 return (obj1->sphere.center - p.cam_pos).magnitude() < (obj2->sphere.center - p.cam_pos).magnitude();
             }
-  );
+  ); */ //Conflict cases, see Workshop Part 2.2 scene 8
   for(auto& elem : j["lights"]){
     if(elem["__type__"] == "point_light"){
       Vec3 pos(elem["position"][0],elem["position"][1],elem["position"][2]);

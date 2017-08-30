@@ -66,7 +66,7 @@ Vec3 Vec3::cross(const Vec3 &other) {
     return Vec3::cross(*this,other);
 }
 
-std::string Vec3::to_string() {
+std::string Vec3::to_string() const{
     std::ostringstream ss;
     ss << "(" << this->x << ", " << this->y << ", " << this->z << ")";
     return ss.str();

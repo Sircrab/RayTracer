@@ -19,7 +19,8 @@ RenderParams Parser::parse_params(int argc, char **argv) {
           ("m, maxDepth", "Maximum ray depth", cxxopts::value<unsigned int>()->default_value("3"));
   options.parse(argc,argv);
   RenderParams r(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),
-          options["i"].as<std::string>(),options["s"].as<std::string>(),options["r"].as<std::string>());
+          options["i"].as<std::string>(),options["s"].as<std::string>(),
+          options["r"].as<std::string>(),options["m"].as<unsigned int>());
   return r;
 }
 

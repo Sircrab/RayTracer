@@ -58,7 +58,7 @@ Vec3 Vec3::normalize() const{
     return Vec3(this->x/this->magnitude(),this->y/this->magnitude(),this->z/this->magnitude());
 }
 
-double Vec3::dot(const Vec3 &other) {
+double Vec3::dot(const Vec3 &other) const{
     return Vec3::dot(*this,other);
 }
 

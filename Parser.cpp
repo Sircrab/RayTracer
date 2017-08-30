@@ -15,7 +15,8 @@ RenderParams Parser::parse_params(int argc, char **argv) {
   ("h,height","Render height",cxxopts::value<unsigned int>())
   ("s,scene","Scene description file",cxxopts::value<std::string>())
           ("i,image","Image file output",cxxopts::value<std::string>())
-          ("r,resources", "Scene objects Resources", cxxopts::value<std::string>());
+          ("r,resources", "Scene objects Resources", cxxopts::value<std::string>())
+          ("m, maxDepth", "Maximum ray depth", cxxopts::value<unsigned int>()->default_value("3"));
   options.parse(argc,argv);
   RenderParams r(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),
           options["i"].as<std::string>(),options["s"].as<std::string>(),options["r"].as<std::string>());
@@ -43,7 +44,7 @@ SceneMaterials Parser::parse_materials(RenderParams& renderParams) {
       }
     } else if(elem["__type__"] == "reflective_material"){
       sceneMaterials.add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color));
-    } else if(elem["__type__" == "dielectric_material"]){
+    } else if(elem["__type__"] == "dielectric_material"){
       Color attenuation(elem["attenuation"][0],elem["attenuation"][1],elem["attenuation"][2]);
       double refractionIdx = elem["refraction_index"];
       sceneMaterials.add_dielectric_material(name,std::make_shared<const DielectricMaterial>(color,attenuation,refractionIdx));
@@ -62,6 +63,9 @@ SceneParams Parser::parse_scene(RenderParams& renderParams, SceneMaterials& scen
   p.cam_up = Vec3(j["camera"]["up"][0],j["camera"]["up"][1],j["camera"]["up"][2]);
   p.cam_target = Vec3(j["camera"]["target"][0],j["camera"]["target"][1],j["camera"]["target"][2]);
   p.bg_color = Vec3(j["params"]["background_color"][0],j["params"]["background_color"][1],j["params"]["background_color"][2]);
+  if(j["params"].count("refraction_index")){
+    p.refractionIdx = j["params"]["refraction_index"];
+  }
   for(auto& elem : j["objects"]){
     if(elem["__type__"] == "sphere"){
       std::shared_ptr<SceneObject> curObj = std::make_shared<SceneObject>

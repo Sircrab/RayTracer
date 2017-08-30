@@ -19,6 +19,7 @@ public:
     Vec3 cam_up;
     Vec3 cam_target;
     double cam_fov;
+    double refractionIdx = 1;
     SceneParams();
     void add_object(std::shared_ptr<SceneObject> object);
     void add_light(std::shared_ptr<const Light> light);

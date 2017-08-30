@@ -23,7 +23,7 @@ public:
     Vec3 operator*(double lambda) const;
     double magnitude() const;
     Vec3 normalize() const;
-    double dot(const Vec3& other);
+    double dot(const Vec3& other) const;
     Vec3 cross(const Vec3& other);
     std::string to_string();
 };

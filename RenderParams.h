@@ -8,6 +8,7 @@
 struct RenderParams{
     unsigned int width;
     unsigned int height;
+    unsigned int maxDepth;
     std::string img_title;
     std::string json_file;
     std::string resources_file;

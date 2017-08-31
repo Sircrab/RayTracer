@@ -5,7 +5,7 @@
 #include "Ray.h"
 #include <cmath>
 //Based on the analytical solution seen in class.
-//Returns true if an intersection is found and writes the closes point in out, otherwise it returns false
+//Returns true if an intersection is found and writes the closest point in out, otherwise it returns false
 bool Ray::intersect_sphere(const Sphere& s, Vec3& out) const{
   double det = pow(this->direction.dot(this->origin - s.center),2) -
                pow((this->origin - s.center).magnitude(),2) + pow(s.radius,2);

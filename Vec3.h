@@ -24,7 +24,7 @@ public:
     double magnitude() const;
     Vec3 normalize() const;
     double dot(const Vec3& other) const;
-    Vec3 cross(const Vec3& other);
+    Vec3 cross(const Vec3& other) const;
     std::string to_string() const;
 };
 

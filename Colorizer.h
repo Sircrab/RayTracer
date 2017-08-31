@@ -20,11 +20,14 @@ public:
     Color get_color(const SceneObject& obj,const Vec3& hitPoint, const Vec3& originPoint, unsigned int depth);
     bool get_closest_object(const Ray& hitRay, Vec3& outPos, std::shared_ptr<const SceneObject>& outObj);
 private:
-    const double eps = 1e-5; //Shadow bias
+    const double eps = 1e-3; //Shadow bias
     Color get_direct_color(const SceneObject& obj,const Vec3& hitPoint, const Vec3& originPoint);
     Color get_indirect_color(const SceneObject& obj);
     Color get_reflected_color(const SceneObject& obj,const Vec3& hitPoint,const Vec3& originPoint, unsigned int depth);
-    Color get_refracted_color(const SceneObject& obj,const Vec3& hitPoint, unsigned int depth);
+    Color get_refracted_color(const SceneObject& obj,const Vec3& hitPoint,const Vec3& originPoint, unsigned int depth);
     bool in_shadow(const Vec3& hitPoint,const Light& light);
+    double total_internal_reflection_coef(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut);
+    Vec3 get_refraction_deviation(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut);
+    double fresnel_coef(double rIdxIn, double rIdxOut, double angleCosine);
 };
 #endif //RAYTRACER_COLORIZER_H

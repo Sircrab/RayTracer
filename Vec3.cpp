@@ -62,7 +62,7 @@ double Vec3::dot(const Vec3 &other) const{
     return Vec3::dot(*this,other);
 }
 
-Vec3 Vec3::cross(const Vec3 &other) {
+Vec3 Vec3::cross(const Vec3 &other) const{
     return Vec3::cross(*this,other);
 }
 

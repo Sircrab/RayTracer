@@ -84,14 +84,18 @@ Color Colorizer::get_refracted_color(const SceneObject &obj, const Vec3 &hitPoin
         Ray innerRefractRay(hitPoint + refractionDir * eps,refractionDir);
         Vec3 exitPoint, refractHitPos;
         innerRefractRay.intersect_sphere(obj.sphere,exitPoint); //THIS SHOULD ALWAYS HIT
+        double distance = (exitPoint - hitPoint).magnitude();
+        attenuationCoef = Color(std::exp(-curMat->attenuation.r()*distance),
+                                std::exp(-curMat->attenuation.g()*distance),
+                                std::exp(-curMat->attenuation.b()*distance));
         Vec3 exitNormal = (exitPoint - obj.sphere.center).normalize();
         TIRIdx = total_internal_reflection_coef(-exitNormal,refractionDir,sceneParams.refractionIdx,curMat->refractionIdx);
+        if(TIRIdx < 0){
+          return curMat->baseColor * attenuationCoef * reflectedColor;
+        }
         Vec3 exitDir = ((get_refraction_deviation(-exitNormal,refractionDir,sceneParams.refractionIdx,curMat->refractionIdx)) -
                 (-exitNormal * std::sqrt(TIRIdx))).normalize();
         Ray refractRay(exitPoint + exitDir * eps, exitDir); //Unsure if eyeDir or refractionDir
-        double distance = (exitPoint - hitPoint).magnitude();
-        attenuationCoef = Color(std::exp(-curMat->attenuation.r()*distance),
-                                std::exp(-curMat->attenuation.g()*distance),std::exp(-curMat->attenuation.b()*distance));
         if(get_closest_object(refractRay,refractHitPos,closestObj)){
           refractedColor = get_color(*closestObj,refractHitPos,exitPoint,depth + 1);
         }

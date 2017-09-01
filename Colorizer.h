@@ -29,5 +29,6 @@ private:
     double total_internal_reflection_coef(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut);
     Vec3 get_refraction_deviation(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut);
     double fresnel_coef(double rIdxIn, double rIdxOut, double angleCosine);
+    bool refract(const Vec3& entryDir, const Vec3& normal, const Vec3& hitPoint, double entryIdx, double exitIdx, Ray& out);
 };
 #endif //RAYTRACER_COLORIZER_H

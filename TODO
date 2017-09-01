@@ -18,5 +18,5 @@ Renderer no longer as static object (Factory?) DONE
 Support for multiple material types DONE
 Update the render loop. Separate color calculations DONE
 Calculate shadows DONE
-Calculate reflections and refractions for those materials
+Calculate reflections and refractions for those materials DONE
 Folders!

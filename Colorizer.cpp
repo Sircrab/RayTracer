@@ -62,51 +62,49 @@ Color Colorizer::get_reflected_color(const SceneObject &obj, const Vec3 &hitPoin
 Color Colorizer::get_refracted_color(const SceneObject &obj, const Vec3 &hitPoint,const Vec3& originPoint, unsigned int depth) {
   //This needs some refactor
   if(obj.dielectricMats.size() > 0){
-    Color acumColor(0.0,0.0,0.0);
     Vec3 entryNormal = (hitPoint - obj.sphere.center).normalize();
     Vec3 eyeDir = (hitPoint - originPoint).normalize();
     Vec3 reflectDir = (eyeDir - (entryNormal * ((eyeDir * 2).dot(entryNormal)))).normalize();
     Ray reflectRay(hitPoint + reflectDir * eps, reflectDir);
-    double entryAngle = -entryNormal.dot(eyeDir);
-    for(const auto& curMat : obj.dielectricMats){
-      Color reflectedColor;
-      Color refractedColor;
-      Color attenuationCoef;
-      Vec3 hitPos;
-      std::shared_ptr<const SceneObject> closestObj;
-      if(get_closest_object(reflectRay,hitPos,closestObj)){
-        reflectedColor = get_color(*closestObj,hitPos, hitPoint,depth + 1);
-      }
-      if(total_internal_reflection_coef(entryNormal,eyeDir,curMat->refractionIdx, sceneParams.refractionIdx) >= 0){
-        double TIRIdx = total_internal_reflection_coef(entryNormal,eyeDir,curMat->refractionIdx, sceneParams.refractionIdx);
-        Vec3 refractionDir = (get_refraction_deviation(entryNormal,eyeDir,curMat->refractionIdx, sceneParams.refractionIdx) -
-                (entryNormal * std::sqrt(TIRIdx))).normalize();
-        Ray innerRefractRay(hitPoint + refractionDir * eps,refractionDir);
-        Vec3 exitPoint, refractHitPos;
-        innerRefractRay.intersect_sphere(obj.sphere,exitPoint); //THIS SHOULD ALWAYS HIT
-        double distance = (exitPoint - hitPoint).magnitude();
-        attenuationCoef = Color(std::exp(-curMat->attenuation.r()*distance),
-                                std::exp(-curMat->attenuation.g()*distance),
-                                std::exp(-curMat->attenuation.b()*distance));
-        Vec3 exitNormal = (exitPoint - obj.sphere.center).normalize();
-        TIRIdx = total_internal_reflection_coef(-exitNormal,refractionDir,sceneParams.refractionIdx,curMat->refractionIdx);
-        if(TIRIdx < 0){
-          return curMat->baseColor * attenuationCoef * reflectedColor;
-        }
-        Vec3 exitDir = ((get_refraction_deviation(-exitNormal,refractionDir,sceneParams.refractionIdx,curMat->refractionIdx)) -
-                (-exitNormal * std::sqrt(TIRIdx))).normalize();
-        Ray refractRay(exitPoint + exitDir * eps, exitDir); //Unsure if eyeDir or refractionDir
-        if(get_closest_object(refractRay,refractHitPos,closestObj)){
-          refractedColor = get_color(*closestObj,refractHitPos,exitPoint,depth + 1);
-        }
-      } else {
-        attenuationCoef = Color(1.0,1.0,1.0);
-      }
-      double fresnelCoef = fresnel_coef(curMat->refractionIdx, sceneParams.refractionIdx,entryAngle);
-      acumColor += curMat->baseColor * attenuationCoef * ((reflectedColor * fresnelCoef) + (refractedColor*(1 - fresnelCoef)));
-
+    Color reflectedColor;
+    Color attenuationCoef;
+    Vec3 hitPos;
+    Ray refractRay;
+    std::shared_ptr<const DielectricMaterial> curMat = obj.dielectricMats[0];
+    std::shared_ptr<const SceneObject> closestObj;
+    if(get_closest_object(reflectRay,hitPos,closestObj)){
+      reflectedColor = get_color(*closestObj,hitPos, hitPoint,depth + 1);
     }
-    return acumColor;
+    //Reflection ends here
+    double entryAngle;
+    double fresnelCoef;
+    if(eyeDir.dot(entryNormal) < 0) { //Entry
+      refract(eyeDir,entryNormal,hitPoint,sceneParams.refractionIdx,curMat->refractionIdx,refractRay);
+      entryAngle = entryNormal.dot(-eyeDir);
+      fresnelCoef = fresnel_coef(curMat->refractionIdx,sceneParams.refractionIdx,entryAngle);
+      attenuationCoef = Color(1.0,1.0,1.0);
+    } else { //Exit
+      double distance = (hitPoint - originPoint).magnitude();
+      attenuationCoef = Color(std::exp(-curMat->attenuation.r()*distance),
+                              std::exp(-curMat->attenuation.g()*distance),
+                              std::exp(-curMat->attenuation.b()*distance));
+      //Check TIR
+      if(refract(eyeDir,-entryNormal,hitPoint,curMat->refractionIdx,sceneParams.refractionIdx,refractRay)){
+        //No TIR
+        entryAngle = -eyeDir.dot(-entryNormal);
+        fresnelCoef = fresnel_coef(sceneParams.refractionIdx, curMat->refractionIdx,entryAngle);
+      } else {
+        //TIR return just reflected part
+        return attenuationCoef * reflectedColor;
+      }
+    }
+    Color refractedColor;
+    Vec3 outPos;
+    if(get_closest_object(refractRay,outPos,closestObj)){
+      refractedColor = get_color(*closestObj,outPos,hitPoint,depth + 1);
+    }
+    return curMat->baseColor * attenuationCoef *((reflectedColor * fresnelCoef) + (refractedColor * (1.0 - fresnelCoef)));
+
   }
   return Color(0.0,0.0,0.0);
 }
@@ -151,4 +149,16 @@ Vec3 Colorizer::get_refraction_deviation(const Vec3 &normal, const Vec3 &eyeDir,
 double Colorizer::fresnel_coef(double rIdxIn, double rIdxOut, double angleCosine) {
   double R_0 = std::pow((rIdxIn - rIdxOut)/(rIdxIn + rIdxOut),2);
   return R_0 + (1-R_0)*std::pow(1-angleCosine,5);
+}
+
+bool Colorizer::refract(const Vec3& entryDir, const Vec3& normal, const Vec3& hitPoint, double entryIdx, double exitIdx, Ray& out){
+  double TIRIdx = total_internal_reflection_coef(normal,entryDir,exitIdx,entryIdx);
+  if(TIRIdx < 0){
+    return false;
+  } else {
+    Vec3 refractDir = (get_refraction_deviation(normal, entryDir, exitIdx, entryIdx) -
+                      normal * std::sqrt(TIRIdx)).normalize();
+    out = Ray(hitPoint + refractDir * eps,refractDir);
+    return true;
+  }
 }

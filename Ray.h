@@ -12,6 +12,7 @@ public:
     Vec3 direction;
     constexpr static double eps = 1.0e-9;
     Ray(Vec3 origin, Vec3 direction) : origin(origin), direction(direction.normalize()){};
+    Ray() : origin(Vec3()), direction(Vec3()){};
     bool intersect_sphere(const Sphere& s, Vec3& out) const;
 };
 #endif //RAYTRACER_RAY_H

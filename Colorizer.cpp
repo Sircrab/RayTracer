@@ -95,16 +95,18 @@ Color Colorizer::get_refracted_color(const SceneObject &obj, const Vec3 &hitPoin
         fresnelCoef = fresnel_coef(sceneParams.refractionIdx, curMat->refractionIdx,entryAngle);
       } else {
         //TIR return just reflected part
-        return attenuationCoef * reflectedColor;
+        return curMat->baseColor * attenuationCoef * reflectedColor;
       }
     }
     Color refractedColor;
     Vec3 outPos;
     if(get_closest_object(refractRay,outPos,closestObj)){
       refractedColor = get_color(*closestObj,outPos,hitPoint,depth + 1);
+    } else {
+      //Border case for TIR on entry
+      return curMat->baseColor * attenuationCoef * reflectedColor;
     }
     return curMat->baseColor * attenuationCoef *((reflectedColor * fresnelCoef) + (refractedColor * (1.0 - fresnelCoef)));
-
   }
   return Color(0.0,0.0,0.0);
 }

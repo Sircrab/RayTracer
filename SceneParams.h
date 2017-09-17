@@ -14,11 +14,11 @@ public:
     std::vector<std::shared_ptr<SceneObject> > sceneObjs;
     std::vector<std::shared_ptr<const Light> > sceneLights;
     std::shared_ptr<const AmbientLight> sceneAmbientLight = nullptr;
-    Vec3 bg_color;
-    Vec3 cam_pos;
-    Vec3 cam_up;
-    Vec3 cam_target;
-    double cam_fov;
+    Color bgColor;
+    Vec3 camPos;
+    Vec3 camUp;
+    Vec3 camTarget;
+    double camFov;
     double refractionIdx = 1;
     SceneParams();
     void add_object(std::shared_ptr<SceneObject> object);

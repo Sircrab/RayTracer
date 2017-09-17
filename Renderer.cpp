@@ -11,9 +11,8 @@
 
 void Renderer::do_render() {
   std::vector<std::vector<Pixel> > preImage(renderParams.width, std::vector<Pixel>(renderParams.height));
-  Camera cam(sceneParams.cam_fov,sceneParams.cam_up,sceneParams.cam_pos,
-             sceneParams.cam_target,renderParams.width,renderParams.height);
-  Color bgColor(sceneParams.bg_color.x,sceneParams.bg_color.y,sceneParams.bg_color.z);
+  Camera cam(sceneParams.camFov,sceneParams.camUp,sceneParams.camPos,
+             sceneParams.camTarget,renderParams.width,renderParams.height);
   Colorizer colorizer(sceneParams,sceneMaterials,renderParams);
   for(int i = 0 ; i < preImage.size(); i++){
     for(int j = 0 ; j < preImage[0].size(); j++){
@@ -26,9 +25,9 @@ void Renderer::do_render() {
       std::shared_ptr<const SceneObject> closestObj = nullptr;
       bool hit = colorizer.get_closest_object(pixRay, out,closestObj);
       if(hit){
-        finalColor = colorizer.get_color(*closestObj,out, sceneParams.cam_pos, 0);
+        finalColor = colorizer.get_color(*closestObj,out, sceneParams.camPos, 0);
       } else {
-       finalColor = bgColor;
+       finalColor = sceneParams.bgColor;
       }
       preImage[i][j] = Pixel{(unsigned char)(finalColor.r()*255),
                              (unsigned char)(finalColor.g()*255),

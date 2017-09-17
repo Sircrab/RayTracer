@@ -4,8 +4,8 @@
 #include "SceneParams.h"
 
 SceneParams::SceneParams() :
-        bg_color(Vec3(0,0,0)), cam_fov(0), cam_pos(Vec3(0,0,0)),
-        cam_up(Vec3(0,0,0)), cam_target(Vec3(0,0,0)) {}
+        bgColor(Color(0,0,0)), camFov(0), camPos(Vec3(0,0,0)),
+        camUp(Vec3(0,0,0)), camTarget(Vec3(0,0,0)) {}
 
 void SceneParams::add_object(std::shared_ptr<SceneObject> sceneObject) {
     sceneObjs.push_back(sceneObject);

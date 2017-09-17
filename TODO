@@ -20,3 +20,6 @@ Update the render loop. Separate color calculations DONE
 Calculate shadows DONE
 Calculate reflections and refractions for those materials DONE
 Folders!
+Prepare for generic objects, Stop assuming spheres
+Change to only 1 dielectric/reflective material
+PARSE ENABLE SHADOWS

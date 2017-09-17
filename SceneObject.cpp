@@ -11,11 +11,11 @@ void SceneObject::attach_brdf_material(std::shared_ptr<const BRDFMaterial> m) {
   }
 }
 
-void SceneObject::attach_reflective_material(std::shared_ptr<const ReflectiveMaterial> m) {
-  reflectiveMats.push_back(m);
+void SceneObject::set_reflective_material(std::shared_ptr<const ReflectiveMaterial> m) {
+  reflectiveMat = m;
 }
 
-void SceneObject::attach_dielectric_material(std::shared_ptr<const DielectricMaterial> m) {
-  dielectricMats.push_back(m);
+void SceneObject::set_dielectric_material(std::shared_ptr<const DielectricMaterial> m) {
+  dielectricMat = m;
 }
 

@@ -4,6 +4,7 @@
 #include "Parser.h"
 #include "cxxopts/cxxopts.hpp"
 #include "json/json.hpp"
+#include "SphereObject.h"
 #include <string>
 #include <fstream>
 #include <algorithm>
@@ -59,37 +60,31 @@ SceneParams Parser::parse_scene(RenderParams& renderParams, SceneMaterials& scen
   nlohmann::json j;
   std::ifstream file(renderParams.json_file);
   file >> j;
-  p.cam_fov = j["camera"]["fov"];
-  p.cam_pos = Vec3(j["camera"]["position"][0],j["camera"]["position"][1],j["camera"]["position"][2]);
-  p.cam_up = Vec3(j["camera"]["up"][0],j["camera"]["up"][1],j["camera"]["up"][2]);
-  p.cam_target = Vec3(j["camera"]["target"][0],j["camera"]["target"][1],j["camera"]["target"][2]);
-  p.bg_color = Vec3(j["params"]["background_color"][0],j["params"]["background_color"][1],j["params"]["background_color"][2]);
+  p.camFov = j["camera"]["fov"];
+  p.camPos = Vec3(j["camera"]["position"][0],j["camera"]["position"][1],j["camera"]["position"][2]);
+  p.camUp = Vec3(j["camera"]["up"][0],j["camera"]["up"][1],j["camera"]["up"][2]);
+  p.camTarget = Vec3(j["camera"]["target"][0],j["camera"]["target"][1],j["camera"]["target"][2]);
+  p.bgColor = Color(j["params"]["background_color"][0],j["params"]["background_color"][1],j["params"]["background_color"][2]);
   if(j["params"].count("refraction_index")){
     p.refractionIdx = j["params"]["refraction_index"];
   }
   for(auto& elem : j["objects"]){
     if(elem["__type__"] == "sphere"){
-      std::shared_ptr<SceneObject> curObj = std::make_shared<SceneObject>
+      auto curObj = std::make_shared<SphereObject>
               (Sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]), elem["radius"]));
       for(auto& mats : elem["materials"]){
         if(sceneMaterials.brdfMats.count(mats)){
           curObj->attach_brdf_material(sceneMaterials.brdfMats[mats]);
         } else if(sceneMaterials.reflectiveMats.count(mats)){
-          curObj->attach_reflective_material(sceneMaterials.reflectiveMats[mats]);
+          curObj->set_reflective_material(sceneMaterials.reflectiveMats[mats]);
         } else if(sceneMaterials.dielectricMats.count(mats)){
-          curObj->attach_dielectric_material(sceneMaterials.dielectricMats[mats]);
+          curObj->set_dielectric_material(sceneMaterials.dielectricMats[mats]);
         }
       }
       p.add_object(curObj);
     }
   }
-  /*
-  //SORT
-  std::sort(p.sceneObjs.begin(),p.sceneObjs.end(),
-            [&](const std::shared_ptr<SceneObject> obj1, std::shared_ptr<SceneObject> obj2) -> bool{
-                return (obj1->sphere.center - p.cam_pos).magnitude() < (obj2->sphere.center - p.cam_pos).magnitude();
-            }
-  ); */ //Conflict cases, see Workshop Part 2.2 scene 8
+
   for(auto& elem : j["lights"]){
     if(elem["__type__"] == "point_light"){
       Vec3 pos(elem["position"][0],elem["position"][1],elem["position"][2]);

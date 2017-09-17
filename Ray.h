@@ -6,6 +6,8 @@
 #define RAYTRACER_RAY_H
 #include "Vec3.h"
 #include "Sphere.h"
+//Forward declaration
+class SceneObject;
 class Ray {
 public:
     Vec3 origin;
@@ -13,6 +15,6 @@ public:
     constexpr static double eps = 1.0e-9;
     Ray(Vec3 origin, Vec3 direction) : origin(origin), direction(direction.normalize()){};
     Ray() : origin(Vec3()), direction(Vec3()){};
-    bool intersect_sphere(const Sphere& s, Vec3& out) const;
+    bool intersect_object(const SceneObject& s, Vec3& out) const;
 };
 #endif //RAYTRACER_RAY_H

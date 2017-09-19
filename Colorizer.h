@@ -9,13 +9,16 @@
 #include "RenderParams.h"
 #include "Color.h"
 #include "Ray.h"
+#include <memory>
 //Colorizer must exist only within the context of a renderer
 class Colorizer {
 public:
-  SceneParams& sceneParams;
-  SceneMaterials& sceneMaterials;
-  RenderParams& renderParams;
-  Colorizer(SceneParams& sceneParams, SceneMaterials& sceneMaterials, RenderParams& renderParams) :
+  std::shared_ptr<const SceneParams> sceneParams;
+  std::shared_ptr<const SceneMaterials> sceneMaterials;
+  std::shared_ptr<const RenderParams> renderParams;
+  Colorizer(std::shared_ptr<const SceneParams> sceneParams,
+            std::shared_ptr<const SceneMaterials> sceneMaterials,
+            std::shared_ptr<const RenderParams> renderParams) :
           sceneParams(sceneParams), sceneMaterials(sceneMaterials), renderParams(renderParams){};
   Color get_color(const SceneObject& obj,const Vec3& hitPoint, const Vec3& originPoint, unsigned int depth);
   bool get_closest_object(const Ray& hitRay, Vec3& outPos, std::shared_ptr<const SceneObject>& outObj);

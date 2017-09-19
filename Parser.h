@@ -7,10 +7,12 @@
 #include "SceneParams.h"
 #include "RenderParams.h"
 #include "SceneMaterials.h"
+#include <memory>
 class Parser{
 public:
-    static RenderParams parse_params(int argc, char* argv[]);
-    static SceneMaterials parse_materials(RenderParams& renderParams);
-    static SceneParams parse_scene(RenderParams& renderParams, SceneMaterials& sceneMaterials);
+    static std::shared_ptr<RenderParams> parse_params(int argc, char* argv[]);
+    static std::shared_ptr<SceneMaterials> parse_materials(std::shared_ptr<RenderParams> renderParams);
+    static std::shared_ptr<SceneParams> parse_scene(std::shared_ptr<RenderParams> renderParams,
+                                                          std::shared_ptr<SceneMaterials> sceneMaterials);
 };
 #endif //RAYTRACER_PARSER_H

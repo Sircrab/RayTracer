@@ -11,10 +11,12 @@
 
 class Renderer{
 public:
-    SceneParams sceneParams;
-    SceneMaterials sceneMaterials;
-    RenderParams renderParams;
-    Renderer(SceneParams sceneParams, SceneMaterials sceneMaterials ,RenderParams renderParams) :
+    std::shared_ptr<const SceneParams> sceneParams;
+    std::shared_ptr<const SceneMaterials> sceneMaterials;
+    std::shared_ptr<const RenderParams> renderParams;
+    Renderer(std::shared_ptr<const SceneParams> sceneParams,
+             std::shared_ptr<const SceneMaterials> sceneMaterials,
+             std::shared_ptr<const RenderParams> renderParams) :
             sceneParams(sceneParams),sceneMaterials(sceneMaterials),renderParams(renderParams){};
     void do_render();
 private:

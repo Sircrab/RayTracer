@@ -74,9 +74,9 @@ void Mesh::parse_face_line(const std::string &line, bool computeNormals) {
       }
     }
   } else {
-    faceVertices[0] = std::stoul(faceValues[1]);
-    faceVertices[1] = std::stoul(faceValues[2]);
-    faceVertices[2] = std::stoul(faceValues[3]);
+    faceVertices[0] = std::stoul(faceValues[1]) - 1;
+    faceVertices[1] = std::stoul(faceValues[2]) - 1;
+    faceVertices[2] = std::stoul(faceValues[3]) - 1;
     unsigned int normalIdx = normals.size();
     if(!computeNormals){
       Vec3 A = vertices[faceVertices[1]] - vertices[faceVertices[0]];

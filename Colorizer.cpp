@@ -31,7 +31,7 @@ Color Colorizer::get_direct_color(const SceneObject &obj, const RayCastHit &rayH
     Color acumColor(0.0,0.0,0.0);
     for(auto const& curMat : obj.brdfMats){
       for(auto const& light: sceneParams->sceneLights){
-        if(!in_shadow(rayHit.hitPos,*light)){
+        if(!in_shadow(rayHit.hitPos,*light)) {
           acumColor += light->cast_on(*curMat, originPoint, rayHit.normal, rayHit.hitPos);
         }
       }

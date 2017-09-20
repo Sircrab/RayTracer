@@ -2,38 +2,66 @@
 // Created by Geno on 25-Aug-17.
 //
 #include "Renderer.h"
-#include "Camera.h"
-#include "Ray.h"
-#include "Colorizer.h"
-#include "Pixel.h"
 #include "Utils.h"
+#include <thread>
 #include <iostream>
+#include <cmath>
+#include <chrono>
+
 
 void Renderer::do_render() {
-  std::vector<std::vector<Pixel> > preImage(renderParams->width, std::vector<Pixel>(renderParams->height));
-  Camera cam(sceneParams->camFov,sceneParams->camUp,sceneParams->camPos,
+  auto preImage = std::make_shared<std::vector<std::vector<Pixel> > > (renderParams->width, std::vector<Pixel>(renderParams->height));
+  auto cam = std::make_shared<Camera>(sceneParams->camFov,sceneParams->camUp,sceneParams->camPos,
              sceneParams->camTarget,renderParams->width,renderParams->height);
-  Colorizer colorizer(sceneParams,sceneMaterials,renderParams);
-  for(int i = 0 ; i < preImage.size(); i++){
-    for(int j = 0 ; j < preImage[0].size(); j++){
-      double i_u = cam.get_left() + ((cam.get_right() - cam.get_left())/renderParams->width)*(i + 0.5);
-      double j_v = cam.get_bottom() + ((cam.get_top() - cam.get_bottom())/renderParams->height)*(j + 0.5);
-      Vec3 pixDir = cam.get_u() * i_u + cam.get_v() * j_v + cam.get_w() * -near;
-      Ray pixRay(cam.cam_pos,pixDir);
-      Color finalColor;
-      Vec3 out;
-      std::shared_ptr<const SceneObject> closestObj = nullptr;
-      bool hit = colorizer.get_closest_object(pixRay, out,closestObj);
-      if(hit){
-        finalColor = colorizer.get_color(*closestObj,out, sceneParams->camPos, 0);
-      } else {
-       finalColor = sceneParams->bgColor;
-      }
-      preImage[i][j] = Pixel{(unsigned char)(finalColor.r()*255),
-                             (unsigned char)(finalColor.g()*255),
-                             (unsigned char)(finalColor.b()*255),255};
+  auto colorizer = std::make_shared<Colorizer>(sceneParams,sceneMaterials,renderParams);
+  std::vector<std::thread > threadPool;
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  start = std::chrono::system_clock::now();
+  for(unsigned int i = 0 ; i < preImage->size(); i+= renderParams->taskSize){
+    for(unsigned int j = 0 ; j < (*preImage)[0].size(); j+= renderParams->taskSize){
+      std::shared_ptr<RenderTask> task = std::make_shared<RenderTask>
+        (i, std::min<unsigned int>(i + renderParams->taskSize, preImage->size()),
+         j, std::min<unsigned int>(j + renderParams->taskSize, (*preImage)[0].size()),
+         colorizer, preImage, cam);
+      taskQueue.push(task);
     }
   }
-  utils::generateImage(renderParams->img_title,preImage,renderParams->width,renderParams->height);
+  for(int i = 0 ; i < renderParams->numThreads; i++){
+    threadPool.push_back(std::thread(thread_render, this));
+  }
+  for(auto& thread: threadPool){
+    thread.join();
+  }
+  end = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsedSeconds = end-start;
+  std::cout << "Duration: " << elapsedSeconds.count() << std::endl;
+
+  utils::generateImage(renderParams->img_title,*preImage,renderParams->width,renderParams->height);
 }
+
+void Renderer::thread_render() {
+
+  while(true){
+    std::shared_ptr<RenderTask> nextTask = pop_task_atomic();
+    if(nextTask == nullptr) break;
+    for(unsigned int i = nextTask->fromX; i < nextTask->toX; i++){
+      for(unsigned int j = nextTask->fromY; j < nextTask->toY; j++){
+        nextTask->render_pixel_at(i,j);
+      }
+    }
+  }
+
+}
+
+std::shared_ptr<RenderTask> Renderer::pop_task_atomic() {
+  std::lock_guard<std::mutex> guard(queueMutex);
+  std::shared_ptr<RenderTask> nextTask = nullptr;
+  if(!taskQueue.empty()){
+    nextTask = taskQueue.front();
+    taskQueue.pop();
+  }
+  return nextTask;
+}
+
+
 

@@ -17,11 +17,14 @@ std::shared_ptr<RenderParams> Parser::parse_params(int argc, char **argv) {
   ("s,scene","Scene description file",cxxopts::value<std::string>())
           ("i,image","Image file output",cxxopts::value<std::string>())
           ("r,resources", "Scene objects Resources", cxxopts::value<std::string>())
-          ("m, maxDepth", "Maximum ray depth", cxxopts::value<unsigned int>()->default_value("3"));
+          ("m, maxDepth", "Maximum ray depth", cxxopts::value<unsigned int>()->default_value("3"))
+          ("n, numThreads", "Number of threads", cxxopts::value<unsigned int>()->default_value("1"))
+          ("t, taskSize", "Size of the renderTasks", cxxopts::value<unsigned int>()->default_value("2"));
   options.parse(argc,argv);
   std::shared_ptr<RenderParams> r = std::make_shared<RenderParams>(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),
           options["i"].as<std::string>(),options["s"].as<std::string>(),
-          options["r"].as<std::string>(),options["m"].as<unsigned int>());
+          options["r"].as<std::string>(),options["m"].as<unsigned int>(),
+          options["n"].as<unsigned int>(), options["t"].as<unsigned int>());
   return r;
 }
 

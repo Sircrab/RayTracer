@@ -7,19 +7,26 @@
 #include "SceneMaterials.h"
 #include "SceneParams.h"
 #include "RenderParams.h"
+#include "RenderTask.h"
 #include <memory>
-
+#include <queue>
+#include <mutex>
 class Renderer{
 public:
-    std::shared_ptr<const SceneParams> sceneParams;
-    std::shared_ptr<const SceneMaterials> sceneMaterials;
-    std::shared_ptr<const RenderParams> renderParams;
-    Renderer(std::shared_ptr<const SceneParams> sceneParams,
-             std::shared_ptr<const SceneMaterials> sceneMaterials,
-             std::shared_ptr<const RenderParams> renderParams) :
-            sceneParams(sceneParams),sceneMaterials(sceneMaterials),renderParams(renderParams){};
-    void do_render();
+  std::shared_ptr<const SceneParams> sceneParams;
+  std::shared_ptr<const SceneMaterials> sceneMaterials;
+  std::shared_ptr<const RenderParams> renderParams;
+  Renderer(std::shared_ptr<const SceneParams> sceneParams,
+           std::shared_ptr<const SceneMaterials> sceneMaterials,
+           std::shared_ptr<const RenderParams> renderParams) :
+          sceneParams(sceneParams),sceneMaterials(sceneMaterials),renderParams(renderParams),
+          taskQueue(std::queue<std::shared_ptr<RenderTask> >()), queueMutex(){};
+  void do_render();
 private:
-    static constexpr double near = 0.1;
+  std::queue<std::shared_ptr<RenderTask> > taskQueue;
+  std::mutex queueMutex;
+  void thread_render();
+  std::shared_ptr<RenderTask> pop_task_atomic();
+
 };
 #endif //RAYTRACER_RENDERER_H

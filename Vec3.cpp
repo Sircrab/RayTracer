@@ -50,6 +50,13 @@ Vec3 Vec3::operator*(double lambda) const{
     return Vec3::scalar_mul(*this,lambda);
 }
 
+Vec3 Vec3::operator+=(const Vec3& other){
+    this->x = this->x + other.x;
+    this->y = this->y + other.y;
+    this->z = this->z + other.z;
+    return *this;
+}
+
 double Vec3::magnitude() const{
     return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }

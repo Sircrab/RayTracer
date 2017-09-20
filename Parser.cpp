@@ -5,6 +5,7 @@
 #include "cxxopts/cxxopts.hpp"
 #include "json/json.hpp"
 #include "SphereObject.h"
+#include "MeshObject.h"
 #include <string>
 #include <fstream>
 #include <algorithm>
@@ -75,6 +76,24 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
     if(elem["__type__"] == "sphere"){
       auto curObj = std::make_shared<SphereObject>
               (Sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]), elem["radius"]));
+      for(auto& mats : elem["materials"]){
+        if(sceneMaterials->brdfMats.count(mats)){
+          curObj->attach_brdf_material((sceneMaterials->brdfMats)[mats]);
+        } else if(sceneMaterials->reflectiveMats.count(mats)){
+          curObj->set_reflective_material((sceneMaterials->reflectiveMats)[mats]);
+        } else if(sceneMaterials->dielectricMats.count(mats)){
+          curObj->set_dielectric_material((sceneMaterials->dielectricMats)[mats]);
+        }
+      }
+      p->add_object(curObj);
+    } else if (elem["__type__"] == "mesh"){
+      Mesh newMesh;
+      bool computeNormals = false;
+      if(elem.count("compute_vertex_normals")){
+        computeNormals = elem["compute_vertex_normals"];
+      }
+      newMesh.parse_from_file(elem["file_path"],computeNormals);
+      auto curObj = std::make_shared<MeshObject>(newMesh);
       for(auto& mats : elem["materials"]){
         if(sceneMaterials->brdfMats.count(mats)){
           curObj->attach_brdf_material((sceneMaterials->brdfMats)[mats]);

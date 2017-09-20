@@ -11,10 +11,11 @@
 
 class BRDFMaterial; //Forward declaration
 class SceneObject; //Forward declaration
+class RayCastHit; //Forward declaration
 class Light{
 public:
     virtual Color cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const =0;
-    virtual bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, Vec3 &out) const=0;
+    virtual bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const=0;
 };
 
 class PointLight : public Light{
@@ -23,7 +24,7 @@ public:
     Color color;
     PointLight(Vec3 position, Color color): position(position), color(color){};
     Color cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const override;
-    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, Vec3 &out) const override;
+    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const override;
 };
 
 class DirectionalLight : public Light{
@@ -32,7 +33,7 @@ public:
     Color color;
     DirectionalLight(Vec3 direction, Color color): direction(direction), color(color){};
     Color cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const override;
-    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, Vec3 &out) const override;
+    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const override;
 };
 
 class SpotLight : public Light{
@@ -43,7 +44,7 @@ public:
     SpotLight(Vec3 position, Vec3 direction, double angle, Color color):
             position(position), direction(direction), angle(angle), color(color){};
     Color cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const override;
-    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, Vec3 &out) const override;
+    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const override;
 };
 
 class AmbientLight : public Light{
@@ -51,6 +52,6 @@ public:
     Color color;
     AmbientLight(Color color): color(color){};
     Color cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const override;
-    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, Vec3 &out) const override;
+    bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const override;
 };
 #endif //RAYTRACER_LIGHT_H

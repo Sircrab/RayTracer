@@ -7,7 +7,7 @@ Vec3 SphereObject::get_normal(const Vec3 &pos) const {
   return (pos - sphere.center).normalize();
 }
 
-bool SphereObject::intersect_ray(const Ray &ray, Vec3 &out) const {
+bool SphereObject::intersect_ray(const Ray &ray, RayCastHit &out) const {
   double det = pow(ray.direction.dot(ray.origin - sphere.center),2) -
                pow((ray.origin - sphere.center).magnitude(),2) + pow(sphere.radius,2);
   //1st case: No intersection
@@ -17,7 +17,8 @@ bool SphereObject::intersect_ray(const Ray &ray, Vec3 &out) const {
   if(det >= -Ray::eps && det <= Ray::eps){
     double d = ft + sqrt(det);
     if(abs(d) - Ray::eps < 0) return false;
-    out = ray.origin + ray.direction * d;
+    out.hitPos = ray.origin + ray.direction * d;
+    out.normal = get_normal(out.hitPos);
     return true;
   }
     //3rd Case: Double intersection
@@ -34,10 +35,12 @@ bool SphereObject::intersect_ray(const Ray &ray, Vec3 &out) const {
       if(d2 + Ray::eps < 0){
         return false;
       }
-      out = ray.origin + ray.direction * d2;
+      out.hitPos = ray.origin + ray.direction * d2;
+      out.normal = get_normal(out.hitPos);
       return true;
     }
-    out = ray.origin + ray.direction * d1;
+    out.hitPos = ray.origin + ray.direction * d1;
+    out.normal = get_normal(out.hitPos);
     return true;
   }
 }

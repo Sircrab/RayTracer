@@ -7,13 +7,14 @@
 #include <limits>
 #include <iostream>
 
-Color Colorizer::get_color(const SceneObject& obj,const Vec3& hitPoint,const Vec3& originPoint, unsigned int depth) {
+Color Colorizer::get_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
+                           unsigned int depth) {
   Color acumColor(0.0,0.0,0.0);
   if(depth <= renderParams->maxDepth){
     acumColor += get_indirect_color(obj);
-    acumColor += get_direct_color(obj, hitPoint, originPoint);
-    acumColor += get_reflected_color(obj, hitPoint,originPoint, depth);
-    acumColor += get_refracted_color(obj, hitPoint,originPoint, depth);
+    acumColor += get_direct_color(obj, rayHit, originPoint);
+    acumColor += get_reflected_color(obj, rayHit,originPoint, depth);
+    acumColor += get_refracted_color(obj, rayHit,originPoint, depth);
   }
   return acumColor;
 }
@@ -25,13 +26,13 @@ Color Colorizer::get_indirect_color(const SceneObject &obj) {
   return Color(0.0,0.0,0.0);
 }
 
-Color Colorizer::get_direct_color(const SceneObject &obj, const Vec3 &hitPoint, const Vec3& originPoint) {
+Color Colorizer::get_direct_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint) {
   if(obj.brdfMats.size()){
     Color acumColor(0.0,0.0,0.0);
     for(auto const& curMat : obj.brdfMats){
       for(auto const& light: sceneParams->sceneLights){
-        if(!in_shadow(hitPoint,*light)){
-          acumColor += light->cast_on(*curMat, originPoint, obj.get_normal(hitPoint), hitPoint);
+        if(!in_shadow(rayHit.hitPos,*light)){
+          acumColor += light->cast_on(*curMat, originPoint, rayHit.normal, rayHit.hitPos);
         }
       }
     }
@@ -40,49 +41,51 @@ Color Colorizer::get_direct_color(const SceneObject &obj, const Vec3 &hitPoint, 
   return Color(0.0,0.0,0.0);
 }
 
-Color Colorizer::get_reflected_color(const SceneObject &obj, const Vec3 &hitPoint,const Vec3& originPoint, unsigned int depth) {
+Color Colorizer::get_reflected_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
+                                     unsigned int depth) {
   if(obj.reflectiveMat){
-    Ray reflectRay = reflect(hitPoint, originPoint, obj.get_normal(hitPoint));
-    Vec3 hitPos;
+    Ray reflectRay = reflect(rayHit.hitPos, originPoint, rayHit.normal);
+    RayCastHit reflectRayHit;
     std::shared_ptr<const SceneObject> closestObj;
-    if(get_closest_object(reflectRay,hitPos,closestObj)){
-      return obj.reflectiveMat->baseColor * get_color(*closestObj,hitPos, hitPoint,depth + 1);
+    if(get_closest_object(reflectRay,reflectRayHit,closestObj)){
+      return obj.reflectiveMat->baseColor * get_color(*closestObj,reflectRayHit, rayHit.hitPos, depth + 1);
     }
     return sceneParams->bgColor;
   }
   return Color(0.0,0.0,0.0);
 }
 
-Color Colorizer::get_refracted_color(const SceneObject &obj, const Vec3 &hitPoint,const Vec3& originPoint, unsigned int depth) {
+Color Colorizer::get_refracted_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
+                                     unsigned int depth) {
   //This needs some refactor
   if(obj.dielectricMat){
-    Vec3 entryNormal = obj.get_normal(hitPoint);
-    Vec3 eyeDir = (hitPoint - originPoint).normalize();
-    Ray reflectRay = reflect(hitPoint, originPoint, entryNormal);
+    Vec3 entryNormal = rayHit.normal;
+    Vec3 eyeDir = (rayHit.hitPos - originPoint).normalize();
+    Ray reflectRay = reflect(rayHit.hitPos, originPoint, entryNormal);
     Color reflectedColor;
     Color attenuationCoef;
-    Vec3 hitPos;
+    RayCastHit reflectRayHit;
     Ray refractRay;
     std::shared_ptr<const DielectricMaterial> curMat = obj.dielectricMat;
     std::shared_ptr<const SceneObject> closestObj;
-    if(get_closest_object(reflectRay,hitPos,closestObj)){
-      reflectedColor = get_color(*closestObj,hitPos, hitPoint,depth + 1);
+    if(get_closest_object(reflectRay,reflectRayHit,closestObj)){
+      reflectedColor = get_color(*closestObj,reflectRayHit, rayHit.hitPos,depth + 1);
     }
     //Reflection ends here
     double entryAngle;
     double fresnelCoef;
     if(eyeDir.dot(entryNormal) < 0) { //Entry
-      refract(eyeDir,entryNormal,hitPoint,sceneParams->refractionIdx,curMat->refractionIdx,refractRay);
+      refract(eyeDir,entryNormal,rayHit.hitPos,sceneParams->refractionIdx,curMat->refractionIdx,refractRay);
       entryAngle = entryNormal.dot(-eyeDir);
       fresnelCoef = fresnel_coef(curMat->refractionIdx,sceneParams->refractionIdx,entryAngle);
       attenuationCoef = Color(1.0,1.0,1.0);
     } else { //Exit
-      double distance = (hitPoint - originPoint).magnitude();
+      double distance = (rayHit.hitPos - originPoint).magnitude();
       attenuationCoef = Color(std::exp(-curMat->attenuation.r()*distance),
                               std::exp(-curMat->attenuation.g()*distance),
                               std::exp(-curMat->attenuation.b()*distance));
       //Check TIR
-      if(refract(eyeDir,-entryNormal,hitPoint,curMat->refractionIdx,sceneParams->refractionIdx,refractRay)){
+      if(refract(eyeDir,-entryNormal,rayHit.hitPos,curMat->refractionIdx,sceneParams->refractionIdx,refractRay)){
         //No TIR
         entryAngle = -eyeDir.dot(-entryNormal);
         fresnelCoef = fresnel_coef(sceneParams->refractionIdx, curMat->refractionIdx,entryAngle);
@@ -92,9 +95,9 @@ Color Colorizer::get_refracted_color(const SceneObject &obj, const Vec3 &hitPoin
       }
     }
     Color refractedColor;
-    Vec3 outPos;
-    if(get_closest_object(refractRay,outPos,closestObj)){
-      refractedColor = get_color(*closestObj,outPos,hitPoint,depth + 1);
+    RayCastHit refractRayHit;
+    if(get_closest_object(refractRay,refractRayHit,closestObj)){
+      refractedColor = get_color(*closestObj,refractRayHit,rayHit.hitPos,depth + 1);
     } else {
       //Border case for TIR on entry
       return curMat->baseColor * attenuationCoef * reflectedColor;
@@ -107,24 +110,24 @@ Color Colorizer::get_refracted_color(const SceneObject &obj, const Vec3 &hitPoin
 bool Colorizer::in_shadow(const Vec3 &hitPoint, const Light &light) {
   bool result = false;
   for(auto const& curObj : sceneParams->sceneObjs){
-    Vec3 rayOutput;
+    RayCastHit rayOutput;
     result |= light.cast_shadow_ray(hitPoint,*curObj, eps, rayOutput);
   }
   return result;
 }
 
-bool Colorizer::get_closest_object(const Ray &hitRay, Vec3 &outPos, std::shared_ptr<const SceneObject>& outObj) {
+bool Colorizer::get_closest_object(const Ray &hitRay, RayCastHit &rayHit, std::shared_ptr<const SceneObject> &outObj) {
   std::shared_ptr<SceneObject> closestCandidate = nullptr;
   double minDistance = std::numeric_limits<double>::max();
   bool hit = false;
   for (const auto &curObj : sceneParams->sceneObjs) {
-    Vec3 out;
+    RayCastHit out;
     if (bool curHit = curObj->intersect_ray(hitRay,out)) {
-      if ((out - hitRay.origin).magnitude() < minDistance) {
+      if ((out.hitPos - hitRay.origin).magnitude() < minDistance) {
         hit |= curHit;
-        minDistance = (out - hitRay.origin).magnitude();
+        minDistance = (out.hitPos - hitRay.origin).magnitude();
         closestCandidate = curObj;
-        outPos = out;
+        rayHit = out;
       }
     }
   }

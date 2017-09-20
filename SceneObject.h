@@ -8,6 +8,7 @@
 #include "Materials.h"
 #include "Color.h"
 #include "Ray.h"
+#include "RayCastHit.h"
 #include <vector>
 #include <memory>
 
@@ -20,8 +21,7 @@ public:
   void attach_brdf_material(std::shared_ptr<const BRDFMaterial> m);
   void set_reflective_material(std::shared_ptr<const ReflectiveMaterial> m);
   void set_dielectric_material(std::shared_ptr<const DielectricMaterial> m);
-  virtual Vec3 get_normal(const Vec3& pos) const=0;
-  virtual bool intersect_ray(const Ray& ray, Vec3& out) const=0;
+  virtual bool intersect_ray(const Ray& ray, RayCastHit& out) const=0;
 protected:
   SceneObject(): reflectiveMat(nullptr), dielectricMat(nullptr){};
 };

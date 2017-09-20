@@ -7,6 +7,6 @@
 #include <cmath>
 
 //Double dispatch
-bool Ray::intersect_object(const SceneObject &s, Vec3 &out) const {
+bool Ray::intersect_object(const SceneObject &s, RayCastHit &out) const {
   return s.intersect_ray(*this,out);
 }

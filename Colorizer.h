@@ -9,6 +9,7 @@
 #include "RenderParams.h"
 #include "Color.h"
 #include "Ray.h"
+#include "RayCastHit.h"
 #include <memory>
 //Colorizer must exist only within the context of a renderer
 class Colorizer {
@@ -20,14 +21,16 @@ public:
             std::shared_ptr<const SceneMaterials> sceneMaterials,
             std::shared_ptr<const RenderParams> renderParams) :
           sceneParams(sceneParams), sceneMaterials(sceneMaterials), renderParams(renderParams){};
-  Color get_color(const SceneObject& obj,const Vec3& hitPoint, const Vec3& originPoint, unsigned int depth);
-  bool get_closest_object(const Ray& hitRay, Vec3& outPos, std::shared_ptr<const SceneObject>& outObj);
+  Color get_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint, unsigned int depth);
+  bool get_closest_object(const Ray &hitRay, RayCastHit &rayHit, std::shared_ptr<const SceneObject> &outObj);
 private:
   const double eps = 1e-3; //Shadow bias
-  Color get_direct_color(const SceneObject& obj,const Vec3& hitPoint, const Vec3& originPoint);
+  Color get_direct_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint);
   Color get_indirect_color(const SceneObject& obj);
-  Color get_reflected_color(const SceneObject& obj,const Vec3& hitPoint,const Vec3& originPoint, unsigned int depth);
-  Color get_refracted_color(const SceneObject& obj,const Vec3& hitPoint,const Vec3& originPoint, unsigned int depth);
+  Color get_reflected_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
+                            unsigned int depth);
+  Color get_refracted_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
+                            unsigned int depth);
   bool in_shadow(const Vec3& hitPoint,const Light& light);
   double total_internal_reflection_coef(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut) const;
   Vec3 get_refraction_deviation(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut) const;

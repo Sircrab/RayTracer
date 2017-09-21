@@ -100,7 +100,7 @@ Color Colorizer::get_refracted_color(const SceneObject &obj, const RayCastHit &r
       refractedColor = get_color(*closestObj,refractRayHit,rayHit.hitPos,depth + 1);
     } else {
       //Border case for TIR on entry
-      return curMat->baseColor * attenuationCoef * reflectedColor;
+      return sceneParams->bgColor;
     }
     return curMat->baseColor * attenuationCoef *((reflectedColor * fresnelCoef) + (refractedColor * (1.0 - fresnelCoef)));
   }

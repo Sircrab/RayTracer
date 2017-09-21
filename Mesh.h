@@ -8,6 +8,7 @@
 #include "Triangle.h"
 #include <vector>
 #include <string>
+class AABB; //forward declaration
 class Mesh {
 public:
   std::vector<Vec3> vertices;
@@ -15,6 +16,7 @@ public:
   std::vector<Triangle> triangles;
   Mesh(){};
   void parse_from_file(const std::string& file, bool computeNormals);
+  AABB calc_AABB();
 private:
   void parse_vertex_line(const std::string& line);
   void parse_normal_line(const std::string& line);

@@ -13,6 +13,7 @@ public:
   static Vec3 add(const Vec3& a, const Vec3& b);
   static Vec3 sub(const Vec3& a, const Vec3& b);
   static Vec3 mul(const Vec3& a, const Vec3& b);
+  static Vec3 div(const Vec3& a, const Vec3& b);
   static Vec3 scalar_mul(const Vec3& a, double b);
   static double dot(const Vec3& a, const Vec3& b);
   static Vec3 cross(const Vec3& a, const Vec3& b);
@@ -20,6 +21,7 @@ public:
   Vec3 operator-(const Vec3& other) const;
   Vec3 operator-() const;
   Vec3 operator*(const Vec3& other) const;
+  Vec3 operator/(const Vec3& other) const;
   Vec3 operator*(double lambda) const;
   Vec3 operator+=(const Vec3& other);
   double magnitude() const;

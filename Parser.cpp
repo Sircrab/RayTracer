@@ -93,7 +93,7 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
         computeNormals = elem["compute_vertex_normals"];
       }
       newMesh.parse_from_file(elem["file_path"],computeNormals);
-      auto curObj = std::make_shared<MeshObject>(newMesh);
+      auto curObj = std::make_shared<MeshObject>(newMesh,newMesh.calc_AABB());
       for(auto& mats : elem["materials"]){
         if(sceneMaterials->brdfMats.count(mats)){
           curObj->attach_brdf_material((sceneMaterials->brdfMats)[mats]);

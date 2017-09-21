@@ -3,9 +3,11 @@
 //
 
 #include "Mesh.h"
+#include "AABB.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <limits>
 
 void Mesh::parse_from_file(const std::string &file, bool computeNormals) {
   std::string line;
@@ -116,4 +118,22 @@ void Mesh::parse_normal_line(const std::string &line) {
   double vn0, vn1, vn2;
   ss >> filler >> vn0 >> vn1 >> vn2;
   normals.push_back(Vec3(vn0,vn1,vn2).normalize());
+}
+
+AABB Mesh::calc_AABB() {
+  double minX = std::numeric_limits<double>::max();
+  double minY = std::numeric_limits<double>::max();;
+  double minZ = std::numeric_limits<double>::max();
+  double maxX = std::numeric_limits<double>::min();
+  double maxY = std::numeric_limits<double>::min();
+  double maxZ = std::numeric_limits<double>::min();
+  for(auto& vert : vertices){
+    minX = std::min(minX,vert.x);
+    minY = std::min(minY, vert.y);
+    minZ = std::min(minZ, vert.z);
+    maxX = std::max(maxX, vert.x);
+    maxY = std::max(maxY, vert.y);
+    maxZ = std::max(maxZ, vert.z);
+  }
+  return AABB(Vec3(minX,minY,minZ),Vec3(maxX,maxY,maxZ));
 }

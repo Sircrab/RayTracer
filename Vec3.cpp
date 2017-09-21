@@ -18,6 +18,10 @@ Vec3 Vec3::mul(const Vec3 &a, const Vec3 &b) {
     return Vec3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
+Vec3 Vec3::div(const Vec3 &a, const Vec3 &b) {
+    return Vec3(a.x / b.x, a.y / b.y, a.z / b.z);
+}
+
 Vec3 Vec3::scalar_mul(const Vec3 &a, double b) {
     return Vec3(a.x * b, a.y * b, a.z * b);
 }
@@ -44,6 +48,10 @@ Vec3 Vec3::operator-() const{
 
 Vec3 Vec3::operator*(const Vec3& other) const{
     return Vec3::mul(*this,other);
+}
+
+Vec3 Vec3::operator/(const Vec3 &other) const {
+    return Vec3::div(*this,other);
 }
 
 Vec3 Vec3::operator*(double lambda) const{

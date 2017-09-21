@@ -23,6 +23,6 @@ bool Triangle::intersect_ray(const Ray &ray,const Mesh& mesh, RayCastHit &out) c
   double t = v0v2.dot(qVec) * invDet;
   if(t < 0) return false;
   out.hitPos = ray.origin + ray.direction * t;
-  out.normal = mesh.normals[n1] * u + mesh.normals[n2] * v + mesh.normals[n0] * (1-u-v);
+  out.normal = (mesh.normals[n1] * u + mesh.normals[n2] * v + mesh.normals[n0] * (1-u-v)).normalize();
   return true;
 }

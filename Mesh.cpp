@@ -115,5 +115,5 @@ void Mesh::parse_normal_line(const std::string &line) {
   std::string filler;
   double vn0, vn1, vn2;
   ss >> filler >> vn0 >> vn1 >> vn2;
-  normals.push_back(Vec3(vn0,vn1,vn2));
+  normals.push_back(Vec3(vn0,vn1,vn2).normalize());
 }

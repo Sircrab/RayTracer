@@ -24,21 +24,21 @@ Mat4x4 Transform::generate_pos_mat() const{
 
 Mat4x4 Transform::generate_rot_x_mat() const{
   return Mat4x4(1.0, 0.0, 0.0, 0.0,
-                  0.0, std::cos(rotation.x * (180.0/M_PI)), -std::sin(rotation.x * (180.0/M_PI)), 0.0,
-                  0.0, std::sin(rotation.x * (180.0/M_PI)), std::cos(rotation.x * (180.0/M_PI)), 0.0,
+                  0.0, std::cos(rotation.x * (M_PI/180.0)), -std::sin(rotation.x * (M_PI/180.0)), 0.0,
+                  0.0, std::sin(rotation.x * (M_PI/180.0)), std::cos(rotation.x * (M_PI/180.0)), 0.0,
                   0.0, 0.0, 0.0, 1.0);
 }
 
 Mat4x4 Transform::generate_rot_y_mat() const{
-  return Mat4x4(std::cos(rotation.y * (180.0/M_PI)), 0.0, std::sin(rotation.y * (180.0/M_PI)),0.0,
+  return Mat4x4(std::cos(rotation.y * (M_PI/180.0)), 0.0, std::sin(rotation.y * (M_PI/180.0)),0.0,
                   0.0, 1.0, 0.0,0.0,
-                  -std::sin(rotation.y * (180.0/M_PI)),0.0, std::cos(rotation.y * (180.0/M_PI)),0.0,
+                  -std::sin(rotation.y * (M_PI/180.0)),0.0, std::cos(rotation.y * (M_PI/180.0)),0.0,
                   0.0,0.0,0.0,1.0);
 }
 
 Mat4x4 Transform::generate_rot_z_mat() const{
-  return Mat4x4(std::cos(rotation.z * (180.0/M_PI)), -std::sin(rotation.z * (180.0/M_PI)), 0.0, 0.0,
-                  std::sin(rotation.z * (180.0/M_PI)), std::cos(rotation.z * (180.0/M_PI)), 0.0, 0.0,
+  return Mat4x4(std::cos(rotation.z * (M_PI/180.0)), -std::sin(rotation.z * (M_PI/180.0)), 0.0, 0.0,
+                  std::sin(rotation.z * (M_PI/180.0)), std::cos(rotation.z * (M_PI/180.0)), 0.0, 0.0,
                   0.0, 0.0, 1.0, 0.0,
                   0.0,0.0,0.0,1.0);
 }

@@ -24,7 +24,7 @@ public:
   Color get_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint, unsigned int depth);
   bool get_closest_object(const Ray &hitRay, RayCastHit &rayHit, std::shared_ptr<const SceneObject> &outObj);
 private:
-  const double eps = 1e-6; //Shadow bias
+  const double eps = 1e-3; //Shadow bias
   Color get_direct_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint);
   Color get_indirect_color(const SceneObject& obj);
   Color get_reflected_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,

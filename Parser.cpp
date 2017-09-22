@@ -100,7 +100,7 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
         scale = Vec3(elem["scaling"][0], elem["scaling"][1], elem["scaling"][2]);
       }
       if(elem.count("rotation")){
-        //rotation = Vec3(elem["rotation"][0], elem["rotation"][1], elem["rotation"][2]);
+        rotation = Vec3(elem["rotation"][0].get<int>(), elem["rotation"][1].get<int>(), elem["rotation"][2].get<int>());
       }
       if(elem.count("translation")){
         translation = Vec3(elem["translation"][0], elem["translation"][1], elem["translation"][2]);

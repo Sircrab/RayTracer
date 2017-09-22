@@ -14,7 +14,6 @@ public:
     static Vec4 mul(const Vec4& a, const Vec4& b);
     static Vec4 scalar_mul(const Vec4& a, double b);
     static double dot(const Vec4& a, const Vec4& b);
-    static Vec4 cross(const Vec4& a, const Vec4& b);
     Vec4 operator+(const Vec4& other);
     Vec4 operator-(const Vec4& other);
     Vec4 operator-();
@@ -23,7 +22,6 @@ public:
     double magnitude();
     Vec4 normalize();
     double dot(const Vec4& other);
-    Vec4 cross(const Vec4& other);
     std::string to_string();
 };
 #endif //RAYTRACER_VEC4_H

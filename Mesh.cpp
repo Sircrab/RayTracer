@@ -120,7 +120,7 @@ void Mesh::parse_normal_line(const std::string &line) {
   normals.push_back(Vec3(vn0,vn1,vn2).normalize());
 }
 
-AABB Mesh::calc_AABB() {
+AABB Mesh::calc_AABB(const Transform& transform) {
   double minX = std::numeric_limits<double>::max();
   double minY = std::numeric_limits<double>::max();;
   double minZ = std::numeric_limits<double>::max();
@@ -128,12 +128,13 @@ AABB Mesh::calc_AABB() {
   double maxY = std::numeric_limits<double>::min();
   double maxZ = std::numeric_limits<double>::min();
   for(auto& vert : vertices){
-    minX = std::min(minX,vert.x);
-    minY = std::min(minY, vert.y);
-    minZ = std::min(minZ, vert.z);
-    maxX = std::max(maxX, vert.x);
-    maxY = std::max(maxY, vert.y);
-    maxZ = std::max(maxZ, vert.z);
+    Vec3 vertTransformed = transform.apply(vert);
+    minX = std::min(minX,vertTransformed.x);
+    minY = std::min(minY, vertTransformed.y);
+    minZ = std::min(minZ, vertTransformed.z);
+    maxX = std::max(maxX, vertTransformed.x);
+    maxY = std::max(maxY, vertTransformed.y);
+    maxZ = std::max(maxZ, vertTransformed.z);
   }
   return AABB(Vec3(minX,minY,minZ),Vec3(maxX,maxY,maxZ));
 }

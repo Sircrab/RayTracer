@@ -9,6 +9,7 @@
 #include "Color.h"
 #include "Ray.h"
 #include "RayCastHit.h"
+#include "Transform.h"
 #include <vector>
 #include <memory>
 
@@ -18,11 +19,13 @@ public:
   std::shared_ptr<const ReflectiveMaterial> reflectiveMat;
   std::shared_ptr<const DielectricMaterial> dielectricMat;
   Color ambientColor = Color(0.0,0.0,0.0);
+  Transform transform;
   void attach_brdf_material(std::shared_ptr<const BRDFMaterial> m);
   void set_reflective_material(std::shared_ptr<const ReflectiveMaterial> m);
   void set_dielectric_material(std::shared_ptr<const DielectricMaterial> m);
   virtual bool intersect_ray(const Ray& ray, RayCastHit& out) const=0;
 protected:
+  SceneObject(Transform transform): reflectiveMat(nullptr), dielectricMat(nullptr), transform(transform){};
   SceneObject(): reflectiveMat(nullptr), dielectricMat(nullptr){};
 };
 #endif //RAYTRACER_SCENEOBJECT_H

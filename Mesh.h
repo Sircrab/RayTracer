@@ -6,6 +6,7 @@
 #define RAYTRACER_MESH_H
 #include "Vec3.h"
 #include "Triangle.h"
+#include "Transform.h"
 #include <vector>
 #include <string>
 class AABB; //forward declaration
@@ -16,7 +17,7 @@ public:
   std::vector<Triangle> triangles;
   Mesh(){};
   void parse_from_file(const std::string& file, bool computeNormals);
-  AABB calc_AABB();
+  AABB calc_AABB(const Transform& transform);
 private:
   void parse_vertex_line(const std::string& line);
   void parse_normal_line(const std::string& line);

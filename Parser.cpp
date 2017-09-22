@@ -8,7 +8,7 @@
 #include "MeshObject.h"
 #include <string>
 #include <fstream>
-#include <algorithm>
+#include <unordered_map>
 
 std::shared_ptr<RenderParams> Parser::parse_params(int argc, char **argv) {
   cxxopts::Options options("RayTracer","Simple raytracer");
@@ -60,6 +60,7 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
 }
 
 std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> renderParams, std::shared_ptr <SceneMaterials> sceneMaterials) {
+  std::unordered_map<std::string, std::shared_ptr<Mesh> > meshResources;
   std::shared_ptr<SceneParams> p = std::make_shared<SceneParams>();
   nlohmann::json j;
   std::ifstream file(renderParams->json_file);
@@ -87,13 +88,32 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
       }
       p->add_object(curObj);
     } else if (elem["__type__"] == "mesh"){
-      Mesh newMesh;
+      std::shared_ptr<Mesh> newMesh = std::make_shared<Mesh>();
       bool computeNormals = false;
       if(elem.count("compute_vertex_normals")){
         computeNormals = elem["compute_vertex_normals"];
       }
-      newMesh.parse_from_file(elem["file_path"],computeNormals);
-      auto curObj = std::make_shared<MeshObject>(newMesh,newMesh.calc_AABB());
+      Vec3 scale = {1.0, 1.0, 1.0};
+      Vec3 rotation = {0.0, 0.0, 0.0};
+      Vec3 translation = {0.0, 0.0, 0.0};
+      if(elem.count("scaling")){
+        scale = Vec3(elem["scaling"][0], elem["scaling"][1], elem["scaling"][2]);
+      }
+      if(elem.count("rotation")){
+        //rotation = Vec3(elem["rotation"][0], elem["rotation"][1], elem["rotation"][2]);
+      }
+      if(elem.count("translation")){
+        translation = Vec3(elem["translation"][0], elem["translation"][1], elem["translation"][2]);
+      }
+      Transform transform(translation, rotation, scale);
+      if(meshResources.count(elem["file_path"])){
+        newMesh = meshResources[elem["file_path"]];
+      } else {
+        newMesh->parse_from_file(elem["file_path"],computeNormals);
+        meshResources[elem["file_path"]] = newMesh;
+      }
+      auto curObj = std::make_shared<MeshObject>
+        (std::const_pointer_cast<const Mesh>(newMesh),newMesh->calc_AABB(transform), transform);
       for(auto& mats : elem["materials"]){
         if(sceneMaterials->brdfMats.count(mats)){
           curObj->attach_brdf_material((sceneMaterials->brdfMats)[mats]);

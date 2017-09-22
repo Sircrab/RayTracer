@@ -2,8 +2,6 @@
 #include "RenderParams.h"
 #include "Renderer.h"
 #include "Parser.h"
-#include <memory>
-
 
 int main(int argc, char* argv[]) {
   auto renderParams = Parser::parse_params(argc, argv);

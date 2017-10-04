@@ -65,6 +65,19 @@ Vec3 Vec3::operator+=(const Vec3& other){
     return *this;
 }
 
+double Vec3::operator[](const int idx) const {
+  switch(idx){
+    case 0:
+      return x;
+    case 1:
+      return y;
+    case 2:
+      return z;
+    default:
+      return -1;
+  }
+}
+
 double Vec3::magnitude() const{
     return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }

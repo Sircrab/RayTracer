@@ -24,6 +24,7 @@ public:
   Vec3 operator/(const Vec3& other) const;
   Vec3 operator*(double lambda) const;
   Vec3 operator+=(const Vec3& other);
+  double operator[](const int idx) const;
   double magnitude() const;
   Vec3 normalize() const;
   double dot(const Vec3& other) const;

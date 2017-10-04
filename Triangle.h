@@ -12,6 +12,6 @@ public:
   unsigned int v0, v1, v2;
   unsigned int n0, n1, n2;
   Triangle(){};
-  bool intersect_ray(const Ray& ray,std::shared_ptr<const Mesh> mesh,const Transform& transform, RayCastHit& out) const;
+  bool intersect_ray(const Ray& ray,std::shared_ptr<const Mesh> mesh, RayCastHit& out) const;
 };
 #endif //RAYTRACER_TRIANGLE_H

@@ -9,7 +9,7 @@
 #include <sstream>
 #include <limits>
 
-void Mesh::parse_from_file(const std::string &file, bool computeNormals) {
+void Mesh::parse_from_file(const std::string &file, bool computeNormals, const Transform& transform) {
   std::string line;
   std::ifstream meshFile(file);
   while(!meshFile.eof()){
@@ -43,6 +43,13 @@ void Mesh::parse_from_file(const std::string &file, bool computeNormals) {
       }
       normals.push_back(calcNormal.normalize());
     }
+  }
+  //Apply transform
+  for(int i = 0 ; i < vertices.size(); i++){
+    vertices[i] = transform.apply(vertices[i]);
+  }
+  for(int i = 0 ; i < normals.size(); i++){
+    normals[i] = transform.apply_normal(normals[i]);
   }
 }
 
@@ -120,7 +127,7 @@ void Mesh::parse_normal_line(const std::string &line) {
   normals.push_back(Vec3(vn0,vn1,vn2).normalize());
 }
 
-AABB Mesh::calc_AABB(const Transform& transform) {
+AABB Mesh::calc_AABB() {
   double minX = std::numeric_limits<double>::max();
   double minY = std::numeric_limits<double>::max();;
   double minZ = std::numeric_limits<double>::max();
@@ -128,13 +135,12 @@ AABB Mesh::calc_AABB(const Transform& transform) {
   double maxY = std::numeric_limits<double>::min();
   double maxZ = std::numeric_limits<double>::min();
   for(auto& vert : vertices){
-    Vec3 vertTransformed = transform.apply(vert);
-    minX = std::min(minX,vertTransformed.x);
-    minY = std::min(minY, vertTransformed.y);
-    minZ = std::min(minZ, vertTransformed.z);
-    maxX = std::max(maxX, vertTransformed.x);
-    maxY = std::max(maxY, vertTransformed.y);
-    maxZ = std::max(maxZ, vertTransformed.z);
+    minX = std::min(minX,vert.x);
+    minY = std::min(minY, vert.y);
+    minZ = std::min(minZ, vert.z);
+    maxX = std::max(maxX, vert.x);
+    maxY = std::max(maxY, vert.y);
+    maxZ = std::max(maxZ, vert.z);
   }
   return AABB(Vec3(minX,minY,minZ),Vec3(maxX,maxY,maxZ));
 }

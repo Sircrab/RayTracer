@@ -16,8 +16,8 @@ public:
   std::vector<Vec3> normals;
   std::vector<Triangle> triangles;
   Mesh(){};
-  void parse_from_file(const std::string& file, bool computeNormals);
-  AABB calc_AABB(const Transform& transform);
+  void parse_from_file(const std::string& file, bool computeNormals, const Transform& transform);
+  AABB calc_AABB();
 private:
   void parse_vertex_line(const std::string& line);
   void parse_normal_line(const std::string& line);

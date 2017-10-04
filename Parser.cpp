@@ -60,7 +60,6 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
 }
 
 std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> renderParams, std::shared_ptr <SceneMaterials> sceneMaterials) {
-  std::unordered_map<std::string, std::shared_ptr<Mesh> > meshResources;
   std::shared_ptr<SceneParams> p = std::make_shared<SceneParams>();
   nlohmann::json j;
   std::ifstream file(renderParams->json_file);
@@ -106,14 +105,9 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
         translation = Vec3(elem["translation"][0], elem["translation"][1], elem["translation"][2]);
       }
       Transform transform(translation, rotation, scale);
-      if(meshResources.count(elem["file_path"])){
-        newMesh = meshResources[elem["file_path"]];
-      } else {
-        newMesh->parse_from_file(elem["file_path"],computeNormals);
-        meshResources[elem["file_path"]] = newMesh;
-      }
+      newMesh->parse_from_file(elem["file_path"],computeNormals, transform);
       auto curObj = std::make_shared<MeshObject>
-        (std::const_pointer_cast<const Mesh>(newMesh),newMesh->calc_AABB(transform), transform);
+        (std::const_pointer_cast<const Mesh>(newMesh),newMesh->calc_AABB(), transform);
       for(auto& mats : elem["materials"]){
         if(sceneMaterials->brdfMats.count(mats)){
           curObj->attach_brdf_material((sceneMaterials->brdfMats)[mats]);

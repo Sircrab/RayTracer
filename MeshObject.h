@@ -7,13 +7,18 @@
 #include "SceneObject.h"
 #include "Mesh.h"
 #include "AABB.h"
+#include "Octree.h"
 #include <memory>
 class MeshObject : public SceneObject{
 public:
   std::shared_ptr<const Mesh> mesh;
   AABB boundingBox;
-  MeshObject(std::shared_ptr<const Mesh> mesh, AABB boundingBox, Transform transform) : mesh(mesh), boundingBox(boundingBox),
-                                                                 SceneObject(transform) {};
+  Octree octree;
+  MeshObject(std::shared_ptr<const Mesh> mesh, AABB boundingBox, Octree octree, Transform transform) :
+    mesh(mesh), boundingBox(boundingBox), octree(octree),SceneObject(transform) {};
   bool intersect_ray(const Ray& ray, RayCastHit& out) const override;
+private:
+  bool intersect_mesh(const Ray& ray, RayCastHit& out) const;
+  bool intersect_recursive(const Ray& ray, RayCastHit& out, std::shared_ptr<OctreeNode> curNode, unsigned int curDepth) const;
 };
 #endif //RAYTRACER_MESHOBJECT_H

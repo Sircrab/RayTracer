@@ -54,9 +54,9 @@ bool AABB::intersect_triangle(const std::vector<Vec3>& triVertices) const {
   double triOffset = triNormal.dot(triVertices[0]);
   project(boxVertices, triNormal, boxMin, boxMax);
   if(boxMax < triOffset || boxMin > triOffset) return false;
-  std::vector<Vec3> triEdges = {triVertices[0]-triVertices[1],
-                                triVertices[1] - triVertices[2],
-                                triVertices[2] - triVertices[0]};
+  std::vector<Vec3> triEdges = {triVertices[1]-triVertices[0],
+                                triVertices[2] - triVertices[1],
+                                triVertices[0] - triVertices[2]};
   for(int i = 0 ; i < 3; i++){
     for(int j = 0; j < 3; j++){
       Vec3 axis = triEdges[i].cross(boxNormals[j]);
@@ -74,6 +74,6 @@ void AABB::project(const std::vector<Vec3>& points,const Vec3& projectionAxis, d
   for(const auto& p : points){
     double val = projectionAxis.dot(p);
     outMin = std::min(val, outMin);
-    outMax = std::min(val, outMax);
+    outMax = std::max(val, outMax);
   }
 }

@@ -2,41 +2,23 @@
 // Created by Geno on 21-Sep-17.
 //
 #include "AABB.h"
-
+//Based on https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
 bool AABB::intersect_ray(const Ray &ray) const{
-  double tMin, tMax, tYMin, tYMax, tZMin, tZMax, t;
-  Vec3 invDir = Vec3(1.0,1.0,1.0) / ray.direction;
-  bool xSign = invDir.x < 0; // 1 is negative 0 is positive
-  bool ySign = invDir.y < 0;
-  bool zSign = invDir.z < 0;
-  tMin = ((xSign ? maxVec.x : minVec.x) - ray.origin.x) * invDir.x;
-  tMax = ((!xSign ? maxVec.x : minVec.x) - ray.origin.x) * invDir.x;
-  tYMin = ((ySign ? maxVec.y : minVec.y) - ray.origin.y) * invDir.y;
-  tYMax = ((!ySign ? maxVec.y : minVec.y) - ray.origin.y) * invDir.y;
 
-  if((tMin > tYMax) || (tYMin > tMax)) return false;
-  if(tYMin > tMin){
-    tMin = tYMin;
-  }
-  if(tYMax < tMax){
-    tMax = tYMax;
-  }
+  double tx1 = (minVec.x - ray.origin.x) * ray.invDir.x;
+  double tx2 = (maxVec.x - ray.origin.x) * ray.invDir.x;
+  double ty1 = (minVec.y - ray.origin.y) * ray.invDir.y;
+  double ty2 = (maxVec.y - ray.origin.y) * ray.invDir.y;
+  double tz1 = (minVec.z - ray.origin.z) * ray.invDir.z;
+  double tz2 = (maxVec.z - ray.origin.z) * ray.invDir.z;
 
-  tZMin = ((zSign ? maxVec.z : minVec.z) - ray.origin.z) * invDir.z;
-  tZMax = ((!zSign ? maxVec.z : minVec.z) - ray.origin.z) * invDir.z;
-
-  if(tZMin > tMin){
-    tMin = tZMin;
-  }
-  if(tZMax < tMax){
-    tMax = tZMax;
-  }
-  t = tMin;
-  if(t < 0){
-    t = tMax;
-    if(t < 0) return false;
+  double tmin = std::max(std::max(std::min(tx1,tx2), std::min(ty1,ty2)), std::min(tz1, tz2));
+  double tmax = std::min(std::min(std::max(tx1,tx2), std::max(ty1,ty2)), std::max(tz1, tz2));
+  if(tmax < 0 || tmin > tmax){
+    return false;
   }
   return true;
+  
 }
 //Based on stackoverflow answer:
 // https://stackoverflow.com/questions/17458562/efficient-aabb-triangle-intersection-in-c-sharp
@@ -50,13 +32,13 @@ bool AABB::intersect_triangle(const std::vector<Vec3>& triVertices) const {
     project(triVertices, boxNormals[i], triangleMin, triangleMax);
     if(triangleMax < minVec[i] || triangleMin > maxVec[i]) return false;
   }
-  Vec3 triNormal = (triVertices[1]-triVertices[0]).cross(triVertices[2]-triVertices[0]).normalize();
+  Vec3 triNormal = (triVertices[1]-triVertices[0]).cross(triVertices[2]-triVertices[0]);
   double triOffset = triNormal.dot(triVertices[0]);
   project(boxVertices, triNormal, boxMin, boxMax);
   if(boxMax < triOffset || boxMin > triOffset) return false;
-  std::vector<Vec3> triEdges = {triVertices[1]-triVertices[0],
-                                triVertices[2] - triVertices[1],
-                                triVertices[0] - triVertices[2]};
+  std::vector<Vec3> triEdges = {triVertices[0] - triVertices[1],
+                                triVertices[1] - triVertices[2],
+                                triVertices[2] - triVertices[0]};
   for(int i = 0 ; i < 3; i++){
     for(int j = 0; j < 3; j++){
       Vec3 axis = triEdges[i].cross(boxNormals[j]);

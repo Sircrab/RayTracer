@@ -14,6 +14,7 @@ public:
   Octree(unsigned int maxDepth): maxDepth(maxDepth){};
   void build(const std::shared_ptr<Mesh> mesh);
   unsigned int count(std::shared_ptr<OctreeNode> curNode);
+  void print_children();
 private:
   void build_root(const std::shared_ptr<Mesh> mesh);
   void build_recursive(unsigned int curDepth, std::shared_ptr<OctreeNode> curNode, std::shared_ptr<Mesh> mesh);

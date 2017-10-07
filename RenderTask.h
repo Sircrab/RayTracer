@@ -8,6 +8,7 @@
 #include "Colorizer.h"
 #include "Pixel.h"
 #include "Camera.h"
+#include "ProgressReporter.h"
 #include <memory>
 #include <vector>
 class RenderTask{

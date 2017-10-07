@@ -1,6 +1,7 @@
 //
 // Created by Geno on 04-Oct-17.
 //
+#include <iostream>
 #include "Octree.h"
 
 void Octree::build(const std::shared_ptr<Mesh> mesh) {
@@ -21,7 +22,7 @@ void Octree::build_root(const std::shared_ptr<Mesh> mesh) {
 }
 
 void Octree::build_recursive(unsigned int curDepth, std::shared_ptr<OctreeNode> curNode, std::shared_ptr<Mesh> mesh) {
-  if(curDepth >= maxDepth) return;
+  if(curDepth >= (maxDepth - 1)) return;
   std::vector<AABB> childBoxes = generate_octants(curNode->boundingBox);
   for(int i = 0 ; i < 8; i++){
     curNode->children.push_back(std::make_shared<OctreeNode>(childBoxes[i],curDepth+1));
@@ -39,9 +40,10 @@ void Octree::build_recursive(unsigned int curDepth, std::shared_ptr<OctreeNode> 
   for(auto& curOctant: curNode->children){
     build_recursive(curDepth + 1, curOctant, mesh);
   }
-  if(curDepth < maxDepth){
+  /*
+  if(curDepth < (maxDepth - 1)){
     curNode->tris.clear();
-  }
+  }*/
 }
 std::vector<AABB> Octree::generate_octants(const AABB &box) {
   std::vector<AABB> octants;
@@ -67,5 +69,12 @@ unsigned int Octree::count(std::shared_ptr<OctreeNode> curNode) {
   } else {
     cnt += curNode->tris.size();
     return cnt;
+  }
+}
+
+void Octree::print_children() {
+  std::cout << "Bounding box root: min " << root->boundingBox.minVec.to_string() << " max " << root->boundingBox.maxVec.to_string() << std::endl;
+  for(int i = 0 ; i < 8; i++){
+    std::cout << "Bounding box : min " << root->children[i]->boundingBox.minVec.to_string() << " max " << root->children[i]->boundingBox.maxVec.to_string() << std::endl;
   }
 }

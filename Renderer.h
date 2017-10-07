@@ -16,6 +16,7 @@ public:
   std::shared_ptr<const SceneParams> sceneParams;
   std::shared_ptr<const SceneMaterials> sceneMaterials;
   std::shared_ptr<const RenderParams> renderParams;
+  std::shared_ptr<ProgressReporter> reporter;
   Renderer(std::shared_ptr<const SceneParams> sceneParams,
            std::shared_ptr<const SceneMaterials> sceneMaterials,
            std::shared_ptr<const RenderParams> renderParams) :
@@ -27,6 +28,6 @@ private:
   std::mutex queueMutex;
   void thread_render();
   std::shared_ptr<RenderTask> pop_task_atomic();
-
+  void report_progress();
 };
 #endif //RAYTRACER_RENDERER_H

@@ -3,6 +3,7 @@
 //
 #include "Renderer.h"
 #include "Utils.h"
+#include "ProgressReporter.h"
 #include <thread>
 #include <iostream>
 #include <cmath>
@@ -26,6 +27,8 @@ void Renderer::do_render() {
       taskQueue.push(task);
     }
   }
+  reporter = std::make_shared<ProgressReporter>(taskQueue.size());
+  std::thread reporterThread = std::thread(report_progress, this);
   for(int i = 0 ; i < renderParams->numThreads; i++){
     threadPool.push_back(std::thread(thread_render, this));
   }
@@ -33,6 +36,8 @@ void Renderer::do_render() {
     thread.join();
   }
   end = std::chrono::system_clock::now();
+  reporter->keepReporting = false;
+  reporterThread.join();
   std::chrono::duration<double> elapsedSeconds = end-start;
   std::cout << "Duration: " << elapsedSeconds.count() << std::endl;
 
@@ -49,8 +54,16 @@ void Renderer::thread_render() {
         nextTask->render_pixel_at(i,j);
       }
     }
+    reporter->atomic_increase();
   }
 
+}
+
+void Renderer::report_progress() {
+  while(reporter->keepReporting){
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    reporter->report();
+  }
 }
 
 std::shared_ptr<RenderTask> Renderer::pop_task_atomic() {

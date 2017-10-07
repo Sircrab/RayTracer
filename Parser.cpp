@@ -19,13 +19,13 @@ std::shared_ptr<RenderParams> Parser::parse_params(int argc, char **argv) {
           ("m, maxDepth", "Maximum ray depth", cxxopts::value<unsigned int>()->default_value("3"))
           ("n, numThreads", "Number of threads", cxxopts::value<unsigned int>()->default_value("1"))
           ("t, taskSize", "Size of the renderTasks", cxxopts::value<unsigned int>()->default_value("2"))
-          ("o, octreeDepth", "Maximum depth for octree", cxxopts::value<unsigned int>()->default_value("3"));
+          ("ot", "Maximum depth for octree", cxxopts::value<unsigned int>()->default_value("3"));
   options.parse(argc,argv);
   std::shared_ptr<RenderParams> r = std::make_shared<RenderParams>(options["w"].as<unsigned int>(),options["h"].as<unsigned int>(),
           options["i"].as<std::string>(),options["s"].as<std::string>(),
           options["r"].as<std::string>(),options["m"].as<unsigned int>(),
           options["n"].as<unsigned int>(), options["t"].as<unsigned int>(),
-          options["o"].as<unsigned int>());
+          options["ot"].as<unsigned int>());
   return r;
 }
 
@@ -106,7 +106,7 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
       }
       Transform transform(translation, rotation, scale);
       newMesh->parse_from_file(elem["file_path"],computeNormals, transform);
-      Octree octree(renderParams->maxDepth);
+      Octree octree(renderParams->octreeDepth);
       octree.build(newMesh);
       auto curObj = std::make_shared<MeshObject>
         (std::const_pointer_cast<const Mesh>(newMesh),newMesh->calc_AABB(), octree, transform);

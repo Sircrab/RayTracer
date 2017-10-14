@@ -7,7 +7,7 @@
 #include "Ray.h"
 #include "SceneObject.h"
 #include <limits>
-Color PointLight::cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const{
+Color PointLight::cast_on(const ColorBRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const{
   return m.get_color_from(*this,originPos,normal, rayHit);
 }
 
@@ -18,7 +18,7 @@ bool PointLight::cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, d
   return obj.intersect_ray(shadowRay,out) && (out.hitPos-hitPoint).magnitude() < distance;
 }
 
-Color DirectionalLight::cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const {
+Color DirectionalLight::cast_on(const ColorBRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const {
   return m.get_color_from(*this,originPos,normal,rayHit);
 }
 
@@ -29,7 +29,7 @@ bool DirectionalLight::cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &
   return obj.intersect_ray(shadowRay,out)  && (out.hitPos-hitPoint).magnitude() < distance;
 }
 
-Color SpotLight::cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const {
+Color SpotLight::cast_on(const ColorBRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const {
   return m.get_color_from(*this,originPos,normal,rayHit);
 }
 
@@ -41,7 +41,7 @@ bool SpotLight::cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, do
 }
 
 //This is because these cast functions are for direct lighting, ambient lighting is not direct.
-Color AmbientLight::cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const {
+Color AmbientLight::cast_on(const ColorBRDFMaterial &m, const Vec3 &originPos, const Vec3 &normal, const Vec3 &rayHit) const {
   return Color(0.0,0.0,0.0);
 }
 //Ambient light is never affected by shadows.

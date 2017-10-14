@@ -4,7 +4,7 @@
 #include "SceneMaterials.h"
 #include <iostream>
 
-void SceneMaterials::add_brdf_material(const std::string& name, std::shared_ptr<const BRDFMaterial> m) {
+void SceneMaterials::add_brdf_material(const std::string& name, std::shared_ptr<const ColorBRDFMaterial> m) {
   if(is_free(name)){
     brdfMats[name] = m;
   } else {

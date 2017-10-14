@@ -13,7 +13,7 @@ void ProgressReporter::atomic_increase() {
 void ProgressReporter::report(){
   unsigned int percent = (unsigned int)((cnt*1.0/totalTasks*1.0)*100);
   if(percent != lastPercentage){
-    std::cout << "\r" << percent << "%";
+    std::cout << "\r\r" << percent << "%";
     std::cout.flush();
     lastPercentage = percent;
   }

@@ -105,7 +105,13 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
         translation = Vec3(elem["translation"][0], elem["translation"][1], elem["translation"][2]);
       }
       Transform transform(translation, rotation, scale);
-      newMesh->parse_from_file(elem["file_path"],computeNormals, transform);
+      std::string filePath = elem["file_path"];
+#ifdef _WIN32_WINNT
+      filePath = "meshes\\" + filePath;
+#else
+      filePath = "meshes/" + filePath;
+#endif
+      newMesh->parse_from_file(filePath,computeNormals, transform);
       Octree octree(renderParams->octreeDepth);
       octree.build(newMesh);
       auto curObj = std::make_shared<MeshObject>

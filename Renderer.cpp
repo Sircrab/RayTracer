@@ -38,6 +38,7 @@ void Renderer::do_render() {
   end = std::chrono::system_clock::now();
   reporter->keepReporting = false;
   reporterThread.join();
+  std::cout << std::endl;
   std::chrono::duration<double> elapsedSeconds = end-start;
   std::cout << "Duration: " << elapsedSeconds.count() << std::endl;
 

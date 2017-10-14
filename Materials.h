@@ -8,15 +8,16 @@
 #include "Color.h"
 #include "Camera.h"
 #include "Sphere.h"
-class Material{
+class Material{};
+class ColorMaterial : Material{
 public:
     Color baseColor;
 
 protected:
-    Material(Color baseColor): baseColor(baseColor){};
+    ColorMaterial(Color baseColor): baseColor(baseColor){};
 };
 
-class BRDFMaterial : public Material{
+class ColorBRDFMaterial : public ColorMaterial{
 public:
     bool isAmbient;
     //THESE ONLY HANDLE DIRECT LIGHTING ( NOT AMBIENT)
@@ -27,39 +28,39 @@ public:
     virtual Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const Vec3 &normal,
                                  const Vec3 &rayHit) const=0;
 protected:
-    BRDFMaterial(Color baseColor, bool isAmbient) : Material(baseColor), isAmbient(isAmbient) {};
+    ColorBRDFMaterial(Color baseColor, bool isAmbient) : ColorMaterial(baseColor), isAmbient(isAmbient) {};
 };
 
-class LambertMaterial : public BRDFMaterial{
+class LambertMaterial : public ColorBRDFMaterial{
 public:
-    LambertMaterial(Color baseColor, bool isAmbient = false): BRDFMaterial(baseColor, isAmbient) {};
+    LambertMaterial(Color baseColor, bool isAmbient = false): ColorBRDFMaterial(baseColor, isAmbient) {};
     Color get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const Vec3 &normal, const Vec3 &rayHit) const override;
     Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const Vec3 &normal,
                          const Vec3 &rayHit) const override;
     Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const Vec3 &normal, const Vec3 &rayHit) const override;
 };
 
-class BlinnPhongMaterial : public BRDFMaterial{
+class BlinnPhongMaterial : public ColorBRDFMaterial{
 public:
     double shininess;
     BlinnPhongMaterial(Color baseColor, double shininess, bool isAmbient = false):
-            BRDFMaterial(baseColor, isAmbient), shininess(shininess){};
+            ColorBRDFMaterial(baseColor, isAmbient), shininess(shininess){};
     Color get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const Vec3 &normal, const Vec3 &rayHit) const override;
     Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const Vec3 &normal,
                          const Vec3 &rayHit) const override;
     Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const Vec3 &normal, const Vec3 &rayHit) const override;
 };
 
-class ReflectiveMaterial : public Material {
+class ReflectiveMaterial : public ColorMaterial {
 public:
-    ReflectiveMaterial(Color baseColor) : Material(baseColor) {};
+    ReflectiveMaterial(Color baseColor) : ColorMaterial(baseColor) {};
 };
 
-class DielectricMaterial : public Material {
+class DielectricMaterial : public ColorMaterial {
 public:
     Color attenuation;
     double refractionIdx;
     DielectricMaterial(Color baseColor, Color attenuation, double refractionIdx) :
-            Material(baseColor), attenuation(attenuation), refractionIdx(refractionIdx) {}
+            ColorMaterial(baseColor), attenuation(attenuation), refractionIdx(refractionIdx) {}
 };
 #endif //RAYTRACER_MATERIAL_H

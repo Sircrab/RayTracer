@@ -18,7 +18,7 @@ bool AABB::intersect_ray(const Ray &ray) const{
     return false;
   }
   return true;
-  
+
 }
 //Based on stackoverflow answer:
 // https://stackoverflow.com/questions/17458562/efficient-aabb-triangle-intersection-in-c-sharp

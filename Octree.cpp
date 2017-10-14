@@ -40,10 +40,11 @@ void Octree::build_recursive(unsigned int curDepth, std::shared_ptr<OctreeNode> 
   for(auto& curOctant: curNode->children){
     build_recursive(curDepth + 1, curOctant, mesh);
   }
-  /*
+
   if(curDepth < (maxDepth - 1)){
     curNode->tris.clear();
-  }*/
+    curNode->tris.shrink_to_fit();
+  }
 }
 std::vector<AABB> Octree::generate_octants(const AABB &box) {
   std::vector<AABB> octants;

@@ -12,15 +12,6 @@ bool MeshObject::intersect_ray(const Ray &ray, RayCastHit &out) const {
     std::unordered_set<unsigned int> triSet;
     std::vector<AABB> aabbs;
     intersect_recursive(ray, triSet, octree.root, 0, aabbs);
-    /*
-    if(triSet.size() > 1000){
-      std::cout << "--------------" << std::endl;
-      std::cout << triSet.size() << std::endl;
-      std::cout << "Ray Origin: " << ray.origin.to_string() << " Direction: " << ray.direction.to_string() << std::endl;
-      for(auto box : aabbs){
-        std::cout << "Box start: " << box.minVec.to_string() << " End: " << box.maxVec.to_string() << std::endl;
-      }
-    }*/
     double minDistance = std::numeric_limits<double>::max();
     bool hit = false;
     for(auto triIdx : triSet){

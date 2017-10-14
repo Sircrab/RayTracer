@@ -11,7 +11,6 @@ Color Colorizer::get_color(const SceneObject &obj, const RayCastHit &rayHit, con
                            unsigned int depth) {
   Color acumColor(0.0,0.0,0.0);
   if(depth <= renderParams->maxDepth){
-    acumColor += get_indirect_color(obj);
     acumColor += get_direct_color(obj, rayHit, originPoint);
     acumColor += get_reflected_color(obj, rayHit,originPoint, depth);
     acumColor += get_refracted_color(obj, rayHit,originPoint, depth);
@@ -19,12 +18,6 @@ Color Colorizer::get_color(const SceneObject &obj, const RayCastHit &rayHit, con
   return acumColor;
 }
 
-Color Colorizer::get_indirect_color(const SceneObject &obj) {
-  if(sceneParams->sceneAmbientLight != nullptr){
-    return sceneParams->sceneAmbientLight->color * obj.ambientColor;
-  }
-  return Color(0.0,0.0,0.0);
-}
 
 Color Colorizer::get_direct_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint) {
   if(obj.brdfMats.size()){
@@ -32,7 +25,7 @@ Color Colorizer::get_direct_color(const SceneObject &obj, const RayCastHit &rayH
     for(auto const& curMat : obj.brdfMats){
       for(auto const& light: sceneParams->sceneLights){
         if(!in_shadow(rayHit.hitPos,*light)) {
-          acumColor += light->cast_on(*curMat, originPoint, rayHit.normal, rayHit.hitPos);
+          acumColor += light->cast_on(*curMat, originPoint, rayHit);
         }
       }
     }

@@ -18,7 +18,6 @@ public:
   std::vector<std::shared_ptr<const ColorBRDFMaterial> > brdfMats;
   std::shared_ptr<const ReflectiveMaterial> reflectiveMat;
   std::shared_ptr<const DielectricMaterial> dielectricMat;
-  Color ambientColor = Color(0.0,0.0,0.0);
   Transform transform;
   void attach_brdf_material(std::shared_ptr<const ColorBRDFMaterial> m);
   void set_reflective_material(std::shared_ptr<const ReflectiveMaterial> m);

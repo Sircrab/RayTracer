@@ -43,10 +43,10 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
         isAmbient = elem["use_for_ambient"];
       }
       if(elem["brdf"] == "lambert"){
-        sceneMaterials->add_brdf_material(name, std::make_shared<const LambertMaterial>(color,isAmbient));
+        sceneMaterials->add_brdf_material(name, std::make_shared<const ColorLambertMaterial>(color,isAmbient));
       } else if (elem["brdf"] == "blinnPhong"){
         double shininess = elem["brdfParams"]["shininess"];
-        sceneMaterials->add_brdf_material(name, std::make_shared<const BlinnPhongMaterial>(color,shininess,isAmbient));
+        sceneMaterials->add_brdf_material(name, std::make_shared<const ColorBlinnPhongMaterial>(color,shininess,isAmbient));
       }
     } else if(elem["__type__"] == "reflective_material"){
       sceneMaterials->add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color));

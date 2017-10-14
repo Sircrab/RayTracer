@@ -1,8 +1,8 @@
+#include <iostream>
 #include "SceneParams.h"
 #include "RenderParams.h"
 #include "Renderer.h"
 #include "Parser.h"
-#include "AABB.h"
 
 int main(int argc, char* argv[]) {
   auto renderParams = Parser::parse_params(argc, argv);

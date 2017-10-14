@@ -3,6 +3,7 @@
 //
 #include "Materials.h"
 #include "RayCastHit.h"
+#include "TextureFilters.h"
 
 Color ColorLambertMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const {
   Vec3 lightVec = (pointLight.position - rayHit.hitPos).normalize();
@@ -23,7 +24,7 @@ Color ColorLambertMaterial::get_color_from(const SpotLight &spotLight, const Vec
 
 Color ColorLambertMaterial::get_color_from(const AmbientLight &ambientLight, const Vec3 &cameraPos,
                                            const RayCastHit &rayHit) const {
-  if(isAmbient){
+  if(params.isAmbient){
     return ambientLight.color * baseColor;
   }
   return Color(0.0, 0.0, 0.0);
@@ -34,29 +35,101 @@ Color ColorBlinnPhongMaterial::get_color_from(const PointLight &pointLight, cons
   Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
   Vec3 lightVec = (pointLight.position - rayHit.hitPos).normalize();
   Vec3 hVec = (camVec + lightVec).normalize();
-  return pointLight.color * baseColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)), shininess);
+  return pointLight.color * baseColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)), params.shininess);
 }
 Color ColorBlinnPhongMaterial::get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos,
                                          const RayCastHit &rayHit) const {
   Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
   Vec3 hVec = (camVec - directionalLight.direction.normalize()).normalize();
-  return directionalLight.color * baseColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)),shininess);
+  return directionalLight.color * baseColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)),params.shininess);
 }
 Color ColorBlinnPhongMaterial::get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const {
   Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
   Vec3 lightVec = (rayHit.hitPos - spotLight.position).normalize();
   Vec3 hVec = (camVec - lightVec).normalize();
   double hitAngle = std::acos(lightVec.dot(spotLight.direction.normalize())) * (180.0/M_PI);
-  return hitAngle <= spotLight.angle/2.0 ? spotLight.color * baseColor * std::pow(std::max(0.0,rayHit.normal.dot(hVec)),shininess) :
+  return hitAngle <= spotLight.angle/2.0 ? spotLight.color * baseColor * std::pow(std::max(0.0,rayHit.normal.dot(hVec)),params.shininess) :
          Color(0.0,0.0,0.0);
 }
 
 Color ColorBlinnPhongMaterial::get_color_from(const AmbientLight &ambientLight, const Vec3 &cameraPos,
                                               const RayCastHit &rayHit) const {
-  if(isAmbient){
+  if(params.isAmbient){
     return ambientLight.color * baseColor;
   }
   return Color(0.0, 0.0, 0.0);
 }
+
+Color TextureLambertMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos,
+                                             const RayCastHit &rayHit) const {
+  Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+  Vec3 lightVec = (pointLight.position - rayHit.hitPos).normalize();
+  return pointLight.color * curPointColor * std::max(0.0, rayHit.normal.dot(lightVec));
+}
+
+Color TextureLambertMaterial::get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos,
+                                             const RayCastHit &rayHit) const {
+  Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+  Vec3 lightVec = -directionalLight.direction.normalize();
+  return directionalLight.color * curPointColor * std::max(0.0, rayHit.normal.dot(lightVec));
+}
+
+Color TextureLambertMaterial::get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos,
+                                             const RayCastHit &rayHit) const {
+  Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+  Vec3 lightVec = (rayHit.hitPos - spotLight.position).normalize();
+  double hitAngle = std::acos(lightVec.dot(spotLight.direction.normalize())) * (180.0/M_PI);
+  return hitAngle <= spotLight.angle/2.0 ?
+         spotLight.color * curPointColor * std::max(0.0, rayHit.normal.dot(-lightVec)) :
+         Color(0.0,0.0,0.0);
+}
+
+Color TextureLambertMaterial::get_color_from(const AmbientLight &ambientLight, const Vec3 &cameraPos,
+                                             const RayCastHit &rayHit) const {
+  if(params.isAmbient){
+    Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+    return ambientLight.color * curPointColor;
+  }
+  return Color(0.0, 0.0, 0.0);
+}
+
+Color TextureBlinnPhongMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos,
+                                                const RayCastHit &rayHit) const {
+  Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+  Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
+  Vec3 lightVec = (pointLight.position - rayHit.hitPos).normalize();
+  Vec3 hVec = (camVec + lightVec).normalize();
+  return pointLight.color * curPointColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)), params.shininess);
+}
+
+Color TextureBlinnPhongMaterial::get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos,
+                                                const RayCastHit &rayHit) const {
+  Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+  Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
+  Vec3 hVec = (camVec - directionalLight.direction.normalize()).normalize();
+  return directionalLight.color * curPointColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)),params.shininess);
+}
+
+Color TextureBlinnPhongMaterial::get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos,
+                                                const RayCastHit &rayHit) const {
+  Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+  Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
+  Vec3 lightVec = (rayHit.hitPos - spotLight.position).normalize();
+  Vec3 hVec = (camVec - lightVec).normalize();
+  double hitAngle = std::acos(lightVec.dot(spotLight.direction.normalize())) * (180.0/M_PI);
+  return hitAngle <= spotLight.angle/2.0 ? spotLight.color * curPointColor * std::pow(std::max(0.0,rayHit.normal.dot(hVec)),params.shininess) :
+         Color(0.0,0.0,0.0);
+}
+
+Color TextureBlinnPhongMaterial::get_color_from(const AmbientLight &ambientLight, const Vec3 &cameraPos,
+                                                const RayCastHit &rayHit) const {
+  if(params.isAmbient){
+    Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
+    return ambientLight.color * curPointColor;
+  }
+  return Color(0.0, 0.0, 0.0);
+}
+
+
 
 

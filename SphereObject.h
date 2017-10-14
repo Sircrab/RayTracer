@@ -12,5 +12,6 @@ public:
   bool intersect_ray(const Ray& ray, RayCastHit& out) const override;
 private:
   Vec3 get_normal(const Vec3& pos) const;
+  Vec2 get_uv(const Vec3& pos) const;
 };
 #endif //RAYTRACER_SPHEREOBJECT_H

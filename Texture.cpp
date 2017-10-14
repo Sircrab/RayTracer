@@ -36,7 +36,7 @@ void Texture::read_png(const std::string& fileName){
 }
 
 void Texture::read_jpg(const std::string& fileName){
-  cimg_library::CImg<unsigned char> img(fileName.c_str());
+  auto img = cimg_library::CImg<unsigned char>::get_load_jpeg(fileName.c_str());
   width = (unsigned int)img.width();
   height = (unsigned int)img.height();
   colors = std::vector< std::vector<Pixel> >(width, std::vector<Pixel>(height));

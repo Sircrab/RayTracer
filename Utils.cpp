@@ -19,3 +19,5 @@ void utils:: generateImage(std::string name, std::vector<std::vector<Pixel> >& p
     if(error) std::cerr << lodepng_error_text(error) << std::endl;
   }
 
+
+

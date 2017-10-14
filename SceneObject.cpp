@@ -4,7 +4,7 @@
 #include "SceneObject.h"
 
 //When attaching BRDF materials also check for ambient color.
-void SceneObject::attach_brdf_material(std::shared_ptr<const ColorBRDFMaterial> m) {
+void SceneObject::attach_brdf_material(std::shared_ptr<const BRDFMaterial> m) {
   brdfMats.push_back(m);
 }
 

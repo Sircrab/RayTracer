@@ -2,7 +2,6 @@
 // Created by Geno on 20-Sep-17.
 //
 #include "MeshObject.h"
-#include <limits>
 #include <iostream>
 
 bool MeshObject::intersect_ray(const Ray &ray, RayCastHit &out) const {

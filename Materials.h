@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Texture.h"
+#include "BRDFParams.h"
 //Forward Declaration
 class RayCastHit;
 class TextureFilter;
@@ -25,11 +26,10 @@ protected:
 
 class ColorMaterial : Material{
 public:
-    bool isAmbient;
     Color baseColor;
 
 protected:
-    ColorMaterial(Color baseColor, bool isAmbient): baseColor(baseColor), isAmbient(isAmbient){};
+    ColorMaterial(Color baseColor): baseColor(baseColor){};
 };
 
 class BRDFMaterial : Material{
@@ -43,16 +43,23 @@ public:
 };
 
 class ColorBRDFMaterial : public ColorMaterial, public BRDFMaterial{
+public:
+  BRDFParams params;
 protected:
-  ColorBRDFMaterial(Color baseColor, bool isAmbient): ColorMaterial(baseColor, isAmbient){};
+  ColorBRDFMaterial(Color baseColor, bool isAmbient): ColorMaterial(baseColor), params(isAmbient){};
+  ColorBRDFMaterial(Color baseColor, bool isAmbient, double shininess): ColorMaterial(baseColor), params(isAmbient, shininess){};
 };
 
 class TextureBRDFMaterial : public TextureMaterial, public BRDFMaterial{
 public:
   std::shared_ptr<TextureFilter> filter;
+  BRDFParams params;
+
 protected:
-  TextureBRDFMaterial(std::shared_ptr<Texture> texture, std::shared_ptr<TextureFilter> filter) :
-    TextureMaterial(texture), filter(filter){};
+  TextureBRDFMaterial(std::shared_ptr<Texture> texture, std::shared_ptr<TextureFilter> filter, bool isAmbient) :
+    TextureMaterial(texture), filter(filter), params(isAmbient){};
+  TextureBRDFMaterial(std::shared_ptr<Texture> texture, std::shared_ptr<TextureFilter> filter, bool isAmbient, double shininess):
+    TextureMaterial(texture), filter(filter), params(isAmbient, shininess){};
 };
 
 class ColorLambertMaterial : public ColorBRDFMaterial{
@@ -61,23 +68,42 @@ public:
     Color get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
-    Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const;
+    Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
 };
 
 class ColorBlinnPhongMaterial : public ColorBRDFMaterial{
 public:
-    double shininess;
     ColorBlinnPhongMaterial(Color baseColor, double shininess, bool isAmbient = false):
-            ColorBRDFMaterial(baseColor, isAmbient), shininess(shininess){};
+            ColorBRDFMaterial(baseColor, isAmbient, shininess){};
     Color get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
-    Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const;
+    Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
+};
+
+class TextureLambertMaterial : public TextureBRDFMaterial{
+public:
+  TextureLambertMaterial(std::shared_ptr<Texture> texture, std::shared_ptr<TextureFilter> filter, bool isAmbient) :
+    TextureBRDFMaterial(texture, filter,isAmbient){};
+  Color get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
+};
+
+class TextureBlinnPhongMaterial : public TextureBRDFMaterial{
+public:
+  TextureBlinnPhongMaterial(std::shared_ptr<Texture> texture, std::shared_ptr<TextureFilter> filter, bool isAmbient, double shininess) :
+    TextureBRDFMaterial(texture, filter, isAmbient, shininess){};
+  Color get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
 };
 
 class ReflectiveMaterial : public ColorMaterial {
 public:
-    ReflectiveMaterial(Color baseColor) : ColorMaterial(baseColor, false) {};
+    ReflectiveMaterial(Color baseColor) : ColorMaterial(baseColor) {};
 };
 
 class DielectricMaterial : public ColorMaterial {
@@ -85,6 +111,6 @@ public:
     Color attenuation;
     double refractionIdx;
     DielectricMaterial(Color baseColor, Color attenuation, double refractionIdx) :
-            ColorMaterial(baseColor, false), attenuation(attenuation), refractionIdx(refractionIdx) {}
+            ColorMaterial(baseColor), attenuation(attenuation), refractionIdx(refractionIdx) {}
 };
 #endif //RAYTRACER_MATERIAL_H

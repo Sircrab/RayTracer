@@ -71,15 +71,19 @@ void Mesh::parse_face_line(const std::string &line, bool computeNormals) {
   }
   unsigned int faceVertices[3];
   unsigned int faceNormals[3];
+  unsigned int faceUvs[3] = {0,0,0};
   if(line.find('/') != std::string::npos){
     for(int i = 1; i < 4; i++){
       unsigned int firstSlashPos = faceValues[i].find('/');
       faceVertices[i-1] = std::stoul(faceValues[i].substr(0,firstSlashPos)) - 1;
       unsigned int secondSlashPos = faceValues[i].find('/', firstSlashPos + 1);
       if(secondSlashPos != std::string::npos){
+        if((secondSlashPos - firstSlashPos) != 1){
+          faceUvs[i-1] = std::stoul(faceValues[i].substr(firstSlashPos + 1, (secondSlashPos - firstSlashPos))) -1;
+        }
         faceNormals[i-1] = std::stoul(faceValues[i].substr(secondSlashPos + 1, faceValues[i].size() - secondSlashPos)) - 1;
       } else {
-        faceNormals[i-1] = std::stoul(faceValues[i].substr(firstSlashPos + 1, faceValues[i].size() - secondSlashPos)) - 1;
+        faceUvs[i-1] = std::stoul(faceValues[i].substr(firstSlashPos + 1, faceValues[i].size() - secondSlashPos)) - 1;
       }
     }
   } else {
@@ -108,6 +112,9 @@ void Mesh::parse_face_line(const std::string &line, bool computeNormals) {
     newTri.n1 = faceNormals[1];
     newTri.n2 = faceNormals[2];
   }
+  newTri.uv0 = faceUvs[0];
+  newTri.uv1 = faceUvs[1];
+  newTri.uv2 = faceUvs[2];
   triangles.push_back(newTri);
 }
 
@@ -116,7 +123,7 @@ void Mesh::parse_uv_line(const std::string &line) {
   std::string filler;
   double vt0, vt1;
   ss >> filler >> vt0 >> vt1;
-  //For the moment these are discarded
+  uvs.push_back(Vec2(vt0,vt1));
 }
 
 void Mesh::parse_normal_line(const std::string &line) {

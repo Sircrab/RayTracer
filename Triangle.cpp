@@ -25,5 +25,10 @@ bool Triangle::intersect_ray(const Ray &ray,std::shared_ptr<const Mesh> mesh, Ra
   if(t < 0) return false;
   out.hitPos = ray.origin + ray.direction * t;
   out.normal = (mesh->normals[n1] * u + mesh->normals[n2] * v + mesh->normals[n0] * (1-u-v)).normalize();
+  if(mesh->uvs.size() > 0){
+    out.uv = mesh->uvs[uv1] * u + mesh->uvs[uv2] * v + mesh->uvs[uv0] * (1-u-v);
+  } else {
+    out.uv = Vec2(0, 0);
+  }
   return true;
 }

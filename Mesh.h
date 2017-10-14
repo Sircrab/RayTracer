@@ -14,6 +14,7 @@ class Mesh {
 public:
   std::vector<Vec3> vertices;
   std::vector<Vec3> normals;
+  std::vector<Vec2> uvs;
   std::vector<Triangle> triangles;
   Mesh(){};
   void parse_from_file(const std::string& file, bool computeNormals, const Transform& transform);

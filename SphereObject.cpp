@@ -2,9 +2,15 @@
 // Created by Geno on 17-Sep-17.
 //
 #include "SphereObject.h"
-
+#include <cmath>
 Vec3 SphereObject::get_normal(const Vec3 &pos) const {
   return (pos - sphere.center).normalize();
+}
+
+Vec2 SphereObject::get_uv(const Vec3 &pos) const {
+  double theta = std::acos((pos.y - sphere.center.y)/sphere.radius);
+  double phi = std::atan2(pos.z - sphere.center.z, pos.x - sphere.center.x);
+  return Vec2(1-((M_PI + phi)/ (2*M_PI)),(M_PI - theta)/M_PI);
 }
 
 bool SphereObject::intersect_ray(const Ray &ray, RayCastHit &out) const {
@@ -41,6 +47,8 @@ bool SphereObject::intersect_ray(const Ray &ray, RayCastHit &out) const {
     }
     out.hitPos = ray.origin + ray.direction * d1;
     out.normal = get_normal(out.hitPos);
+    out.uv = get_uv(out.hitPos);
     return true;
   }
 }
+

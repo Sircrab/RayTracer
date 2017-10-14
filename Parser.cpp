@@ -6,6 +6,7 @@
 #include "json/json.hpp"
 #include "SphereObject.h"
 #include "MeshObject.h"
+#include "TextureFilters.h"
 #include <fstream>
 
 std::shared_ptr<RenderParams> Parser::parse_params(int argc, char **argv) {
@@ -34,6 +35,19 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
   nlohmann::json j;
   std::ifstream file(renderParams->resources_file);
   file >> j;
+  std::unordered_map<std::string, std::shared_ptr<TextureFilter>>  filters;
+  filters["nearest_neighbor"] = std::make_shared<NearestPointFilter>();
+  filters["bilinear"] = std::make_shared<BilinearFilter>();
+  std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
+  for(auto& elem : j["textures"]){
+    if(elem["__type__"] == "color_texture"){
+      std::string fileName = elem["file_path"];
+      std::string texName = elem["name"];
+      if(!textures.count(texName)){
+        textures[texName] = std::make_shared<Texture>(fileName);
+      }
+    }
+  }
   for(auto& elem : j["materials"]){
     Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
     std::string name = elem["name"];
@@ -47,6 +61,19 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
       } else if (elem["brdf"] == "blinnPhong"){
         double shininess = elem["brdfParams"]["shininess"];
         sceneMaterials->add_brdf_material(name, std::make_shared<const ColorBlinnPhongMaterial>(color,shininess,isAmbient));
+      }
+    } else if(elem["__type__"] == "brdf_color_texture_material"){
+      bool isAmbient = false;
+      if(elem.count("use_for_ambient")){
+        isAmbient = elem["use_for_ambient"];
+      }
+      std::shared_ptr<TextureFilter> curFilter = filters[elem["texture_filtering"]];
+      std::shared_ptr<Texture> curTex = textures[elem["color_texture"]];
+      if(elem["brdf"] == "lambert"){
+        sceneMaterials->add_brdf_material(name, std::make_shared<const TextureLambertMaterial>(curTex, curFilter, isAmbient));
+      } else if (elem["brdf"] == "blinnPhong"){
+        double shininess = elem["brdfParams"]["shininess"];
+        sceneMaterials->add_brdf_material(name, std::make_shared<const TextureBlinnPhongMaterial>(curTex, curFilter, isAmbient, shininess));
       }
     } else if(elem["__type__"] == "reflective_material"){
       sceneMaterials->add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color));

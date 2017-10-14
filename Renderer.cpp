@@ -28,9 +28,9 @@ void Renderer::do_render() {
     }
   }
   reporter = std::make_shared<ProgressReporter>(taskQueue.size());
-  std::thread reporterThread = std::thread(report_progress, this);
+  std::thread reporterThread = std::thread(&Renderer::report_progress, this);
   for(int i = 0 ; i < renderParams->numThreads; i++){
-    threadPool.push_back(std::thread(thread_render, this));
+    threadPool.push_back(std::thread(&Renderer::thread_render, this));
   }
   for(auto& thread: threadPool){
     thread.join();

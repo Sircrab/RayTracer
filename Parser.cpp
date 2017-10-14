@@ -49,9 +49,9 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
     }
   }
   for(auto& elem : j["materials"]){
-    Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
     std::string name = elem["name"];
     if(elem["__type__"] == "brdf_material"){
+      Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
       bool isAmbient = false;
       if(elem.count("use_for_ambient")){
         isAmbient = elem["use_for_ambient"];
@@ -76,8 +76,10 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
         sceneMaterials->add_brdf_material(name, std::make_shared<const TextureBlinnPhongMaterial>(curTex, curFilter, isAmbient, shininess));
       }
     } else if(elem["__type__"] == "reflective_material"){
+      Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
       sceneMaterials->add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color));
     } else if(elem["__type__"] == "dielectric_material"){
+      Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
       Color attenuation(elem["attenuation"][0],elem["attenuation"][1],elem["attenuation"][2]);
       double refractionIdx = elem["refraction_index"];
       sceneMaterials->add_dielectric_material(name,std::make_shared<const DielectricMaterial>(color,attenuation,refractionIdx));

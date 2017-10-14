@@ -21,6 +21,7 @@ void Texture::build_from_file(const std::string& fileName){
 void Texture::read_png(const std::string& fileName){
   std::vector<unsigned char> png;
   unsigned error = lodepng::decode(png, width, height, fileName.c_str());
+  colors = std::vector< std::vector<Pixel> >(width, std::vector<Pixel>(height));
   if(error){
     std::cout << "PNG decoder error" << std::endl;
   }
@@ -30,7 +31,7 @@ void Texture::read_png(const std::string& fileName){
       unsigned char g = png[(row * width) + (col * 4) + 1];
       unsigned char b = png[(row * width) + (col * 4) + 2];
       unsigned char a = png[(row * width) + (col * 4) + 3];
-      colors[col][row] = Pixel{r,g,b,a};
+      colors[col][height - row - 1] = Pixel{r,g,b,a};
     }
   }
 }
@@ -45,7 +46,7 @@ void Texture::read_jpg(const std::string& fileName){
       unsigned char r = img(col,row,0,0);
       unsigned char g = img(col, row, 0, 1);
       unsigned char b = img(col, row, 0 , 2);
-      colors[col][row] = Pixel{r,g,b,255};
+      colors[col][height-row-1] = Pixel{r,g,b,255};
     }
   }
 }

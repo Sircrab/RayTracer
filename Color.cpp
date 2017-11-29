@@ -25,6 +25,10 @@ Color Color::mul(const Color &a, const Color &b) {
   return Color(a.color.x * b.color.x, a.color.y * b.color.y, a.color.z * b.color.z).clamp();
 }
 
+Color Color::div(const Color &a, const double b) {
+  return Color(a.color.x / b, a.color.y / b, a.color.z / b).clamp();
+}
+
 Color Color::scalar_mul(const Color &a, double lambda) {
   return Color(lambda * a.color.x, lambda * a.color.y, lambda * a.color.z).clamp();
 }
@@ -45,6 +49,10 @@ Color Color::operator*(double lambda) const{
   return scalar_mul(*this,lambda);
 }
 
+Color Color::operator/(double lambda) {
+  return div(*this, lambda);
+}
+
 Color& Color::operator+=(const Color& other) {
   this->color = ((*this) + other).color;
   return *this;
@@ -52,6 +60,10 @@ Color& Color::operator+=(const Color& other) {
 
 Color Color::clamp(){
   return clamp(*this);
+}
+
+Vec3 Color::to_Vec3() const{
+  return color;
 }
 
 double Color::r() const{

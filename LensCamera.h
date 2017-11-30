@@ -5,8 +5,6 @@
 #ifndef RAYTRACER_LENSCAMERA_H
 #define RAYTRACER_LENSCAMERA_H
 #include "Camera.h"
-#include <time.h>
-#include <stdlib.h>
 class LensCamera : public Camera{
 public:
   LensCamera(double cam_fov, Vec3 cam_up, Vec3 cam_pos, Vec3 cam_target,unsigned int scr_width,unsigned int scr_height,

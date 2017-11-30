@@ -4,6 +4,7 @@
 
 #include "LensCamera.h"
 #include <cmath>
+#include "Utils.h"
 
 LensCamera::LensCamera(double cam_fov, Vec3 cam_up, Vec3 cam_pos, Vec3 cam_target, unsigned int scr_width,
                               unsigned int scr_height, double focalDistance, double lensSize) :
@@ -16,7 +17,6 @@ LensCamera::LensCamera(double cam_fov, Vec3 cam_up, Vec3 cam_pos, Vec3 cam_targe
   w = (cam_pos - cam_target).normalize();
   u = cam_up.cross(w).normalize();
   v = w.cross(u).normalize();
-  srand(time(NULL));
 
 }
 
@@ -29,8 +29,6 @@ Vec3 LensCamera::get_v() const {return v;}
 Vec3 LensCamera::get_w() const {return w;}
 double LensCamera::get_near() const {return focalDistance;}
 Vec3 LensCamera::get_position() const {
-  float randFirst = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - 0.5f;
-  float randSecond = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - 0.5f;
-  return cam_pos + (u * lensSize * randFirst) + (v * lensSize * randSecond);
+  return cam_pos + (u * lensSize * utils::get_rand()) + (v * lensSize * utils::get_rand());
 }
 Vec3 LensCamera::get_orig_position() const {return cam_pos;}

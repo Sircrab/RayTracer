@@ -39,6 +39,7 @@ public:
                                  const RayCastHit &rayHit) const=0;
     virtual Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const=0;
     virtual Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const=0;
+    virtual Color get_color_from(const AreaLight& areaLight, const Vec3& cameraPos, const RayCastHit &rayHit) const =0;
 
 };
 
@@ -69,6 +70,7 @@ public:
     Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
+    Color get_color_from(const AreaLight& areaLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
 };
 
 class ColorBlinnPhongMaterial : public ColorBRDFMaterial{
@@ -79,6 +81,7 @@ public:
     Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
     Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
+    Color get_color_from(const AreaLight& areaLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
 };
 
 class TextureLambertMaterial : public TextureBRDFMaterial{
@@ -89,6 +92,7 @@ public:
   Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
   Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
   Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const AreaLight& areaLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
 };
 
 class TextureBlinnPhongMaterial : public TextureBRDFMaterial{
@@ -99,6 +103,7 @@ public:
   Color get_color_from(const DirectionalLight &directionalLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
   Color get_color_from(const SpotLight &spotLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const override;
   Color get_color_from(const AmbientLight& ambientLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
+  Color get_color_from(const AreaLight& areaLight, const Vec3& cameraPos, const RayCastHit &rayHit) const override;
 };
 
 class ReflectiveMaterial : public ColorMaterial {

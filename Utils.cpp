@@ -19,5 +19,9 @@ void utils:: generateImage(std::string name, std::vector<std::vector<Pixel> >& p
     if(error) std::cerr << lodepng_error_text(error) << std::endl;
   }
 
+float utils::get_rand() {
+  return (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - 0.5f;
+}
+
 
 

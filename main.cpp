@@ -3,8 +3,11 @@
 #include "RenderParams.h"
 #include "Renderer.h"
 #include "Parser.h"
+#include <time.h>
+#include <stdlib.h>
 
 int main(int argc, char* argv[]) {
+  srand(time(NULL));
   auto renderParams = Parser::parse_params(argc, argv);
   auto sceneMaterials = Parser::parse_materials(renderParams);
   auto sceneParams = Parser::parse_scene(renderParams, sceneMaterials);

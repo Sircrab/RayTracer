@@ -191,6 +191,14 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
       if(p->sceneAmbientLight == nullptr){
         p->sceneAmbientLight = ambLight;
       }
+    } else if (elem["__type__"] == "area_light"){
+      Vec3 pos(elem["position"][0],elem["position"][1],elem["position"][2]);
+      Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
+      Vec3 dirA(elem["directionA"][0],elem["directionA"][1],elem["directionA"][2]);
+      Vec3 dirB(elem["directionB"][0],elem["directionB"][1],elem["directionB"][2]);
+      double sizeA(elem["sizeA"]);
+      double sizeB(elem["sizeB"]);
+      p->add_light(std::make_shared<const AreaLight>(pos,color,sizeA,sizeB,dirA,dirB));
     }
   }
   file.close();

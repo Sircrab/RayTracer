@@ -10,5 +10,6 @@
 #include <vector>
 namespace utils{
     void generateImage(std::string name, std::vector<std::vector<Pixel> >& preImage, unsigned int width, unsigned int height);
+    float get_rand();
 }
 #endif //RAYTRACER_UTILS_H

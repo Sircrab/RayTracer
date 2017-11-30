@@ -47,6 +47,17 @@ public:
     bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const override;
 };
 
+class AreaLight : public Light{
+public:
+  Vec3 position, dirA, dirB;
+  double sizeA, sizeB;
+  Color color;
+  AreaLight(Vec3 position, Color color, double sizeA, double sizeB, Vec3 dirA, Vec3 dirB):
+    position(position), color(color), sizeA(sizeA), sizeB(sizeB), dirA(dirA), dirB(dirB){};
+  Color cast_on(const BRDFMaterial &m, const Vec3 &originPos, const RayCastHit &rayHit) const override;
+  bool cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias, RayCastHit &out) const override;
+};
+
 class AmbientLight : public Light{
 public:
     Color color;

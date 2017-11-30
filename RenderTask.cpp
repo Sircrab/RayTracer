@@ -11,7 +11,7 @@ void RenderTask::render_pixel_at(unsigned int x, unsigned int y) {
       double i_u = camera->get_left() + ((camera->get_right() - camera->get_left())/colorizer->renderParams->width)*(x + (i * 1.0 / sampleSize));
       double j_v = camera->get_bottom() + ((camera->get_top() - camera->get_bottom())/colorizer->renderParams->height)*(y + (j * 1.0 / sampleSize));
       Vec3 dirIJ = camera->get_u() * i_u + camera->get_v() * j_v + camera->get_w() * -camera->get_near();
-      Vec3 focalPoint = camera->get_orig_position() + dirIJ * camera->get_near();
+      Vec3 focalPoint = camera->get_orig_position() + dirIJ;
       Vec3 curCameraPos = camera->get_position();
       Vec3 pixDir = (focalPoint - curCameraPos);
       Ray pixRay(curCameraPos,pixDir);

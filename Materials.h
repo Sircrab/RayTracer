@@ -108,7 +108,9 @@ public:
 
 class ReflectiveMaterial : public ColorMaterial {
 public:
-    ReflectiveMaterial(Color baseColor) : ColorMaterial(baseColor) {};
+    double glossyFactor;
+    ReflectiveMaterial(Color baseColor, double glossyFactor) : ColorMaterial(baseColor), glossyFactor(glossyFactor) {};
+
 };
 
 class DielectricMaterial : public ColorMaterial {

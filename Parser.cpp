@@ -80,7 +80,11 @@ std::shared_ptr<SceneMaterials> Parser::parse_materials(std::shared_ptr<RenderPa
       }
     } else if(elem["__type__"] == "reflective_material"){
       Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
-      sceneMaterials->add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color));
+      double glossyFactor = 0.0;
+      if(elem.count("glossyFactor")){
+        glossyFactor = elem["glossyFactor"];
+      }
+      sceneMaterials->add_reflective_material(name, std::make_shared<const ReflectiveMaterial>(color, glossyFactor));
     } else if(elem["__type__"] == "dielectric_material"){
       Color color(elem["color"][0],elem["color"][1],elem["color"][2]);
       Color attenuation(elem["attenuation"][0],elem["attenuation"][1],elem["attenuation"][2]);

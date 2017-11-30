@@ -6,6 +6,7 @@
 #include <cmath>
 #include <limits>
 #include <iostream>
+#include "Utils.h"
 
 Color Colorizer::get_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
                            unsigned int depth) {
@@ -37,7 +38,11 @@ Color Colorizer::get_direct_color(const SceneObject &obj, const RayCastHit &rayH
 Color Colorizer::get_reflected_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
                                      unsigned int depth) {
   if(obj.reflectiveMat){
-    Ray reflectRay = reflect(rayHit.hitPos, originPoint, rayHit.normal);
+    Vec3 eyeDir = (rayHit.hitPos - originPoint).normalize();
+    Vec3 aVec = eyeDir.cross(rayHit.normal).normalize();
+    Vec3 bVec = aVec.cross(rayHit.normal).normalize();
+    Vec3 glossyNormal = rayHit.normal + aVec * utils::get_rand() * obj.reflectiveMat->glossyFactor + bVec * utils::get_rand() * obj.reflectiveMat->glossyFactor;
+    Ray reflectRay = reflect(rayHit.hitPos, originPoint, glossyNormal);
     RayCastHit reflectRayHit;
     std::shared_ptr<const SceneObject> closestObj;
     if(get_closest_object(reflectRay,reflectRayHit,closestObj)){

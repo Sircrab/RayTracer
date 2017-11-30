@@ -2,24 +2,19 @@
 // Created by Geno on 18-Sep-17.
 //
 #include "RenderTask.h"
-#include <cmath>
-#include <iostream>
 
 void RenderTask::render_pixel_at(unsigned int x, unsigned int y) {
-  double leftI_u = camera->get_left() + ((camera->get_right() - camera->get_left())/colorizer->renderParams->width)*(x);
-  double rightI_u = camera->get_left() + ((camera->get_right() - camera->get_left())/colorizer->renderParams->width)*(x + 1.0);
-  double bottomJ_v = camera->get_bottom() + ((camera->get_top() - camera->get_bottom())/colorizer->renderParams->height)*(y);
-  double topJ_v = camera->get_bottom() + ((camera->get_top() - camera->get_bottom())/colorizer->renderParams->height)*(y + 1.0);
-
-  Vec3 bottomLeftPixDir = camera->get_u() * leftI_u + camera->get_v() * bottomJ_v + camera->get_w() * -near;
   int sampleSize = (int)std::sqrt(colorizer->renderParams->pixelSamples);
-  Vec3 horizDist = (camera->get_u() * rightI_u - camera->get_u()*leftI_u) * (1.0/sampleSize);
-  Vec3 vertDist = (camera->get_v() * topJ_v - camera->get_v()*bottomJ_v) * (1.0/sampleSize);
   Vec3 colorSum;
   for(int i = 0; i < sampleSize; i++){
     for(int j = 0; j < sampleSize; j++){
-      Vec3 pixDir = bottomLeftPixDir + horizDist * i + vertDist * j;
-      Ray pixRay(camera->cam_pos,pixDir);
+      double i_u = camera->get_left() + ((camera->get_right() - camera->get_left())/colorizer->renderParams->width)*(x + (i * 1.0 / sampleSize));
+      double j_v = camera->get_bottom() + ((camera->get_top() - camera->get_bottom())/colorizer->renderParams->height)*(y + (j * 1.0 / sampleSize));
+      Vec3 dirIJ = camera->get_u() * i_u + camera->get_v() * j_v + camera->get_w() * -camera->get_near();
+      Vec3 focalPoint = camera->get_orig_position() + dirIJ * camera->get_near();
+      Vec3 curCameraPos = camera->get_position();
+      Vec3 pixDir = (focalPoint - curCameraPos);
+      Ray pixRay(curCameraPos,pixDir);
       RayCastHit rayHit;
       std::shared_ptr<const SceneObject> closestObj = nullptr;
       bool hit = colorizer->get_closest_object(pixRay, rayHit,closestObj);

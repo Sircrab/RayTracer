@@ -22,7 +22,5 @@ public:
              std::shared_ptr<Camera> camera) :
     fromX(fromX), toX(toX), fromY(fromY), toY(toY), colorizer(colorizer), preImg(preImg), camera(camera){};
   void render_pixel_at(unsigned int x, unsigned int y);
-private:
-  static constexpr double near = 0.1;
 };
 #endif //RAYTRACER_RENDERTASK_H

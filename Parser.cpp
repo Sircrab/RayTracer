@@ -7,6 +7,8 @@
 #include "SphereObject.h"
 #include "MeshObject.h"
 #include "TextureFilters.h"
+#include "PinHoleCamera.h"
+#include "LensCamera.h"
 #include <fstream>
 
 std::shared_ptr<RenderParams> Parser::parse_params(int argc, char **argv) {
@@ -101,6 +103,13 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
   p->bgColor = Color(j["params"]["background_color"][0],j["params"]["background_color"][1],j["params"]["background_color"][2]);
   if(j["params"].count("refraction_index")){
     p->refractionIdx = j["params"]["refraction_index"];
+  }
+  if(j["camera"]["__type__"] == "camera"){
+    p->cam = std::make_shared<PinHoleCamera>(p->camFov, p->camUp, p->camPos, p->camTarget, renderParams->width, renderParams->height);
+  } else if(j["camera"]["__type__"] == "lens_camera"){
+    double focalDistance = j["camera"]["focal_distance"];
+    double lensSize = j["camera"]["lens_size"];
+    p->cam = std::make_shared<LensCamera>(p->camFov, p->camUp, p->camPos, p->camTarget, renderParams->width, renderParams->height, focalDistance, lensSize);
   }
   for(auto& elem : j["objects"]){
     if(elem["__type__"] == "sphere"){

@@ -12,8 +12,7 @@
 
 void Renderer::do_render() {
   auto preImage = std::make_shared<std::vector<std::vector<Pixel> > > (renderParams->width, std::vector<Pixel>(renderParams->height));
-  auto cam = std::make_shared<Camera>(sceneParams->camFov,sceneParams->camUp,sceneParams->camPos,
-             sceneParams->camTarget,renderParams->width,renderParams->height);
+  auto cam = sceneParams->cam;
   auto colorizer = std::make_shared<Colorizer>(sceneParams,sceneMaterials,renderParams);
   std::vector<std::thread > threadPool;
   std::chrono::time_point<std::chrono::system_clock> start, end;

@@ -5,6 +5,8 @@
 #include "lodepng/lodepng.h"
 #include <memory>
 #include <iostream>
+#include <cmath>
+#include "Mat3x3.h"
 double Utils::exposureTime = 0.0;
 
 void Utils:: generateImage(std::string name, std::vector<std::vector<Pixel> >& preImage, unsigned width, unsigned height){
@@ -29,6 +31,19 @@ float Utils::get_rand() {
 double Utils::get_rand_time() {
   float randomValue = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
   return (exposureTime * randomValue);
+}
+
+Vec3 Utils::get_rand_dir(Vec3 normal) {
+  Vec3 result;
+  Vec3 natNormal = normal.normalize();
+  while(natNormal.dot(result) <= 0){
+    double ranFirst = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2) - 1.0;
+    double ranSecond = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2) - 1.0;
+    double ranThird = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2) - 1.0;
+    result = Vec3(ranFirst,ranSecond,ranThird).normalize();
+  }
+  return result;
+
 }
 
 

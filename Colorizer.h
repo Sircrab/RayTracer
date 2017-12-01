@@ -30,6 +30,7 @@ private:
                             unsigned int depth);
   Color get_refracted_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
                             unsigned int depth);
+  Color get_indirect_color(const SceneObject& obj, const RayCastHit &rayHit, const Vec3& originPoint, unsigned int depth);
   bool in_shadow(const Vec3& hitPoint,const Light& light);
   double total_internal_reflection_coef(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut) const;
   Vec3 get_refraction_deviation(const Vec3& normal, const Vec3& eyeDir, double rIdxIn, double rIdxOut) const;

@@ -36,6 +36,10 @@ Color ColorLambertMaterial::get_color_from(const AreaLight &areaLight, const Vec
   return areaLight.color * baseColor * std::max(0.0, rayHit.normal.dot(lightVec));
 }
 
+Color ColorLambertMaterial::get_diffuse_color(const RayCastHit &rayHit) const {
+  return baseColor;
+}
+
 
 Color ColorBlinnPhongMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos, const RayCastHit &rayHit) const {
   Vec3 camVec = (cameraPos - rayHit.hitPos).normalize();
@@ -72,6 +76,10 @@ Color ColorBlinnPhongMaterial::get_color_from(const AreaLight &areaLight, const 
   Vec3 lightVec = (areaLight.position - rayHit.hitPos).normalize();
   Vec3 hVec = (camVec + lightVec).normalize();
   return areaLight.color * baseColor * std::pow(std::max(0.0, rayHit.normal.dot(hVec)), params.shininess);
+}
+
+Color ColorBlinnPhongMaterial::get_diffuse_color(const RayCastHit &rayHit) const {
+  return baseColor;
 }
 
 Color TextureLambertMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos,
@@ -112,6 +120,10 @@ Color TextureLambertMaterial::get_color_from(const AreaLight &areaLight, const V
   Color curPointColor = filter->get_filtered_color(texture, rayHit.uv);
   Vec3 lightVec = (areaLight.position - rayHit.hitPos).normalize();
   return areaLight.color * curPointColor * std::max(0.0, rayHit.normal.dot(lightVec));
+}
+
+Color TextureLambertMaterial::get_diffuse_color(const RayCastHit &rayHit) const {
+  return filter->get_filtered_color(texture, rayHit.uv);
 }
 
 Color TextureBlinnPhongMaterial::get_color_from(const PointLight &pointLight, const Vec3 &cameraPos,
@@ -158,6 +170,10 @@ Color TextureBlinnPhongMaterial::get_color_from(const AmbientLight &ambientLight
     return ambientLight.color * curPointColor;
   }
   return Color(0.0, 0.0, 0.0);
+}
+
+Color TextureBlinnPhongMaterial::get_diffuse_color(const RayCastHit &rayHit) const {
+  return filter->get_filtered_color(texture, rayHit.uv);
 }
 
 

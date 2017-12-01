@@ -14,5 +14,6 @@ public:
     static void generateImage(std::string name, std::vector<std::vector<Pixel> >& preImage, unsigned int width, unsigned int height);
     static float get_rand();
     static double get_rand_time();
+    static Vec3 get_rand_dir(Vec3 normal);
 };
 #endif //RAYTRACER_UTILS_H

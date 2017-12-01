@@ -8,7 +8,7 @@
 class LensCamera : public Camera{
 public:
   LensCamera(double cam_fov, Vec3 cam_up, Vec3 cam_pos, Vec3 cam_target,unsigned int scr_width,unsigned int scr_height,
-            double focalDistance, double lensSize);
+            double focalDistance, double lensSize, double exposure);
   double get_top() const override;
   double get_left() const override;
   double get_right() const override;
@@ -22,6 +22,7 @@ public:
 protected:
   double focalDistance;
   double lensSize;
+  double exposure;
 
 };
 #endif //RAYTRACER_LENSCAMERA_H

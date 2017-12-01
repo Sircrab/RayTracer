@@ -41,7 +41,7 @@ Color Colorizer::get_reflected_color(const SceneObject &obj, const RayCastHit &r
     Vec3 eyeDir = (rayHit.hitPos - originPoint).normalize();
     Vec3 aVec = eyeDir.cross(rayHit.normal).normalize();
     Vec3 bVec = aVec.cross(rayHit.normal).normalize();
-    Vec3 glossyNormal = rayHit.normal + aVec * utils::get_rand() * obj.reflectiveMat->glossyFactor + bVec * utils::get_rand() * obj.reflectiveMat->glossyFactor;
+    Vec3 glossyNormal = rayHit.normal + aVec * Utils::get_rand() * obj.reflectiveMat->glossyFactor + bVec * Utils::get_rand() * obj.reflectiveMat->glossyFactor;
     Ray reflectRay = reflect(rayHit.hitPos, originPoint, glossyNormal);
     RayCastHit reflectRayHit;
     std::shared_ptr<const SceneObject> closestObj;

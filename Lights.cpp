@@ -47,7 +47,7 @@ Color AreaLight::cast_on(const BRDFMaterial &m, const Vec3 &originPos, const Ray
 
 bool AreaLight::cast_shadow_ray(const Vec3 &hitPoint, const SceneObject &obj, double shadowBias,
                                 RayCastHit &out) const {
-  Vec3 randomizedPos = position + (dirA.normalize() * sizeA * utils::get_rand()) + (dirB.normalize() * sizeB * utils::get_rand());
+  Vec3 randomizedPos = position + (dirA.normalize() * sizeA * Utils::get_rand()) + (dirB.normalize() * sizeB * Utils::get_rand());
   Vec3 lightDirection = (randomizedPos - hitPoint).normalize();
   Ray shadowRay(hitPoint + lightDirection * shadowBias, lightDirection);
   double distance = (randomizedPos - hitPoint).magnitude();

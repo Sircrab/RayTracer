@@ -41,7 +41,7 @@ void Renderer::do_render() {
   std::chrono::duration<double> elapsedSeconds = end-start;
   std::cout << "Duration: " << elapsedSeconds.count() << std::endl;
 
-  utils::generateImage(renderParams->img_title,*preImage,renderParams->width,renderParams->height);
+  Utils::generateImage(renderParams->img_title,*preImage,renderParams->width,renderParams->height);
 }
 
 void Renderer::thread_render() {

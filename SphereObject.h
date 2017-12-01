@@ -8,7 +8,9 @@
 class SphereObject : public SceneObject{
 public:
   Sphere sphere;
-  SphereObject(Sphere sphere) : sphere(sphere), SceneObject(){};
+  Vec3 velocity;
+  SphereObject(Sphere sphere) : sphere(sphere), velocity(Vec3(0.0,0.0,0.0)), SceneObject(){};
+  SphereObject(Sphere sphere, Vec3 velocity) : sphere(sphere), velocity(velocity),SceneObject(){};
   bool intersect_ray(const Ray& ray, RayCastHit& out) const override;
 private:
   Vec3 get_normal(const Vec3& pos) const;

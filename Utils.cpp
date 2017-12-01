@@ -5,7 +5,9 @@
 #include "lodepng/lodepng.h"
 #include <memory>
 #include <iostream>
-void utils:: generateImage(std::string name, std::vector<std::vector<Pixel> >& preImage, unsigned width, unsigned height){
+double Utils::exposureTime = 0.0;
+
+void Utils:: generateImage(std::string name, std::vector<std::vector<Pixel> >& preImage, unsigned width, unsigned height){
     auto img = std::make_shared<std::vector<unsigned char> >(width * height * 4);
     for(int i = 0 ; i < width; i++){
       for(int j = 0 ; j < height; j++){
@@ -19,9 +21,14 @@ void utils:: generateImage(std::string name, std::vector<std::vector<Pixel> >& p
     if(error) std::cerr << lodepng_error_text(error) << std::endl;
   }
 
-float utils::get_rand() {
+float Utils::get_rand() {
   return (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) - 0.5f;
 }
 
+
+double Utils::get_rand_time() {
+  float randomValue = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+  return (exposureTime * randomValue);
+}
 
 

@@ -111,14 +111,28 @@ std::shared_ptr<SceneParams> Parser::parse_scene(std::shared_ptr<RenderParams> r
   if(j["camera"]["__type__"] == "camera"){
     p->cam = std::make_shared<PinHoleCamera>(p->camFov, p->camUp, p->camPos, p->camTarget, renderParams->width, renderParams->height);
   } else if(j["camera"]["__type__"] == "lens_camera"){
-    double focalDistance = j["camera"]["focal_distance"];
-    double lensSize = j["camera"]["lens_size"];
-    p->cam = std::make_shared<LensCamera>(p->camFov, p->camUp, p->camPos, p->camTarget, renderParams->width, renderParams->height, focalDistance, lensSize);
+    double focalDistance = 0.1;
+    double lensSize = 0.0;
+    double exposure = 0.0;
+    if(j["camera"].count("focal_distance")){
+      focalDistance = j["camera"]["focal_distance"];
+    }
+    if(j["camera"].count("lens_size")){
+      lensSize = j["camera"]["lens_size"];
+    }
+    if(j["camera"].count("exposure")){
+      exposure = j["camera"]["exposure"];
+    }
+    p->cam = std::make_shared<LensCamera>(p->camFov, p->camUp, p->camPos, p->camTarget, renderParams->width, renderParams->height, focalDistance, lensSize, exposure);
   }
   for(auto& elem : j["objects"]){
     if(elem["__type__"] == "sphere"){
+      Vec3 velocity(0,0,0);
+      if(elem.count("velocity")){
+        velocity = Vec3(elem["velocity"][0], elem["velocity"][1], elem["velocity"][2]);
+      }
       auto curObj = std::make_shared<SphereObject>
-              (Sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]), elem["radius"]));
+              (Sphere(Vec3(elem["position"][0],elem["position"][1],elem["position"][2]), elem["radius"]), velocity);
       for(auto& mats : elem["materials"]){
         if(sceneMaterials->brdfMats.count(mats)){
           curObj->attach_brdf_material((sceneMaterials->brdfMats)[mats]);

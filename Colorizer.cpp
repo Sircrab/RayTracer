@@ -41,16 +41,23 @@ Color Colorizer::get_direct_color(const SceneObject &obj, const RayCastHit &rayH
 Color Colorizer::get_indirect_color(const SceneObject &obj, const RayCastHit &rayHit, const Vec3 &originPoint,
                                     unsigned int depth) {
   Color acumColor(0.0,0.0,0.0);
-  for(auto const& curMat : obj.brdfMats){
+
+  if(obj.brdfMats.size()){
+    auto curMat = obj.brdfMats[0];
     Color diffuseColor = curMat->get_diffuse_color(rayHit);
+    std::cout << diffuseColor.to_Vec3().to_string() << std::endl;
     Vec3 ranDir = Utils::get_rand_dir(rayHit.normal).normalize();
     Ray diffuseRay = Ray(rayHit.hitPos + ranDir * eps, ranDir);
     RayCastHit hit;
     std::shared_ptr<const SceneObject> closestObj;
+    Color indirectColor;
     if(get_closest_object(diffuseRay, hit, closestObj)){
-      Color indirectColor = get_color(*closestObj, hit, rayHit.hitPos, depth + 1);
-      acumColor += diffuseColor * indirectColor * ranDir.dot(rayHit.normal);
+      indirectColor = get_color(*closestObj, hit, rayHit.hitPos, depth + 1);
+    } else {
+      indirectColor = sceneParams->bgColor;
     }
+    acumColor += diffuseColor * indirectColor * ranDir.dot(rayHit.normal);
+
   }
   return acumColor;
 }

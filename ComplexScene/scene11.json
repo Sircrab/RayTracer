@@ -1,0 +1,111 @@
+{
+  "__type__": "scene",
+  "camera": {
+    "__type__": "lens_camera",
+    "fov": 42.0,
+    "position": [ 3, 8, 4 ],
+    "up": [ 0, 1, 0 ],
+    "target": [ 0, 0, 0 ],
+    "lens_size": 0.3,
+    "focal_distance": 9.5,
+    "exposure": 0.75
+  },
+  "objects": [
+    {
+      "__type__": "mesh",
+      "file_path": "squircle.obj",
+      "materials": [ "white_glossy_mirror"],
+      "scaling": [6,6,6],
+      "rotation": [0,20,0],
+      "translation": [-1,6,-3]
+    },
+    {
+      "__type__": "mesh",
+      "file_path": "large_plane.obj",
+      "materials": [ "poolTable_bilinear"],
+      "scaling": [1,1,1],
+      "rotation": [0,0,0],
+      "translation": [-3,-1,-3]
+    },
+    {
+      "__type__": "mesh",
+      "file_path": "large_plane.obj",
+      "materials": [ "white_lambert"],
+      "scaling": [1,1,1],
+      "rotation": [90,0,90],
+      "translation": [-3,-1,-12]
+    },
+    {
+      "__type__": "mesh",
+      "file_path": "large_plane.obj",
+      "materials": [ "white_lambert"],
+      "scaling": [1,1,1],
+      "rotation": [90,0,90],
+      "translation": [-3,-1,8]
+    },
+    {
+      "__type__": "sphere",
+      "radius": 0.9,
+      "position": [ 0.7, 0, 0.6 ],
+      "materials": [ "billiard_n2_bilinear" , "white_bph_1000" ]
+    },
+    {
+      "__type__": "sphere",
+      "radius": 0.9,
+      "position": [ 2, 0, -2 ],
+      "materials": [ "billiard_n4_bilinear" , "white_bph_1000" ]
+    },
+    {
+      "__type__": "sphere",
+      "radius": 0.9,
+      "position": [ -0.5, 0, 2 ],
+      "materials": [ "billiard_n1_bilinear" , "white_bph_1000" ]
+    },
+    {
+      "__type__": "sphere",
+      "radius": 0.9,
+      "position": [ -1.3, 0, 0.4 ],
+      "materials": [ "glass", "white_bph_1000" ]
+    },
+    {
+      "__type__": "sphere",
+      "radius": 0.9,
+      "position": [ -1.8, 0, 3.5 ],
+      "materials": [ "billiard_n6_bilinear", "white_bph_1000"]
+    },
+    {
+      "__type__": "sphere",
+      "radius": 0.9,
+      "position": [ -6, 0, 1 ],
+      "materials": [ "white_lambert", "white_bph_1000" ],
+      "velocity" : [2,0,1]
+    }
+  ],
+  "lights": [
+    {
+      "__type__": "area_light",
+      "position": [ -5, 4, 0.5 ],
+      "color": [ 1, 1, 1 ],
+      "directionA" : [0.5,-0.3,0.0],
+      "directionB" : [0.0,0.0,1.0],
+      "sizeA" : 2,
+      "sizeB" : 5
+    },
+    {
+      "__type__": "area_light",
+      "position": [ 5, 4, 3 ],
+      "color": [ 0.4, 0.4, 0.4 ],
+      "directionA" : [0.5,-0.3,0.0],
+      "directionB" : [0.0,0.0,1.0],
+      "sizeA" : 2,
+      "sizeB" : 5
+    },
+    {
+      "__type__": "ambient_light",
+      "color": [ 0.0, 0.0, 0.0 ]
+    }
+  ],
+  "params": {
+    "background_color": [ 0.4, 0.4, 0.4 ]
+  }
+}

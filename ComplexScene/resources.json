@@ -1,0 +1,359 @@
+{
+  "__type__": "resources",
+  "materials": [
+    {
+		"__type__": "brdf_material",
+		"name": "red_lambert",
+		"color": [1,0,0],
+		"brdfParams": {},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name": "blue_lambert",
+		"color": [0,0,1],
+		"brdfParams": {},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name": "green_lambert",
+		"color": [0,1,0],
+		"brdfParams":{},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name": "yellow_lambert",
+		"color": [1,1,0],
+		"brdfParams":{},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name": "copper_lambert",
+		"color": [0.8,0.45,0.2],
+		"brdfParams":{},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name": "white_lambert",
+		"color": [1,1,1],
+		"brdfParams":{},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name": "gray_lambert",
+		"color": [0.2,0.2,0.2],
+		"brdfParams":{},
+		"brdf": "lambert",
+		"use_for_ambient": true
+	},
+	{
+		"__type__": "brdf_material",
+		"name" : "white_bph_10",
+		"color": [1,1,1],
+		"brdfParams":
+		{
+		  "shininess": 10
+		},
+		"brdf": "blinnPhong"
+	},
+	{
+		"__type__": "brdf_material",
+		"name" : "white_bph_100",
+		"color": [1,1,1],
+		"brdfParams":
+		{
+		  "shininess": 100
+		},
+		"brdf": "blinnPhong"
+	},
+	{
+		"__type__": "brdf_material",
+		"name" : "white_bph_1000",
+		"color": [1,1,1],
+		"brdfParams":
+		{
+		  "shininess": 1000
+		},
+		"brdf": "blinnPhong"
+	},
+	{
+		"__type__": "brdf_material",
+		"name" : "copper_bph_100",
+		"color": [0.8,0.45,0.2],
+		"brdfParams":
+		{
+		  "shininess": 100
+		},
+		"brdf": "blinnPhong"
+	},
+	{
+		"__type__": "brdf_material",
+		"name" : "blue_bph_1000",
+		"color": [0,0,1],
+		"brdfParams":
+		{
+		  "shininess": 1000
+		},
+		"brdf": "blinnPhong"
+	},
+	{
+	  "__type__": "reflective_material",
+	  "name": "white_mirror",
+	  "color": [ 1, 1, 1 ]
+	},
+	{
+	  "__type__": "reflective_material",
+	  "name": "gray_mirror",
+	  "color": [ 0.5, 0.5, 0.5 ]
+	},
+	{
+	  "__type__": "reflective_material",
+	  "name": "gold_mirror",
+	  "color": [ 0.75, 0.6, 0 ]
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "water",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 0, 0, 0 ],
+	  "refraction_index": 1.1
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "glass",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 0.5, 0.5, 0.5 ],
+	  "refraction_index": 3
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "helium",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 0, 0, 0 ],
+	  "refraction_index": 1.025
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "helium_attenuated",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 2, 2, 2 ],
+	  "refraction_index": 1.025
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "air",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 0, 0, 0 ],
+	  "refraction_index": 1.0
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "air_attenuated",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 1, 1, 1 ],
+	  "refraction_index": 1.0
+	},
+	{
+	  "__type__": "dielectric_material",
+	  "name": "air_attenuated_not_green",
+	  "color": [ 1, 1, 1 ],
+	  "attenuation": [ 1, 0, 1 ],
+	  "refraction_index": 1.0
+	},
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "earth_lambert_nn",
+      "color_texture": "earth",
+	  "texture_filtering": "nearest_neighbor",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "earth_lambert_bilinear",
+      "color_texture": "earth",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "red_lambert_nn",
+      "color_texture": "red",
+	  "texture_filtering": "nearest_neighbor",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "red_lambert_bilinear",
+      "color_texture": "red",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "bricks_lambert_nn",
+      "color_texture": "bricks",
+	  "texture_filtering": "nearest_neighbor",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "bricks_lambert_bilinear",
+      "color_texture": "bricks",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+    {
+    	"__type__": "brdf_color_texture_material",
+    	"name": "poolTable_bilinear",
+    	"color_texture": "poolTable",
+    	"texture_filtering": "bilinear",
+    	"brdfParams" : { },
+    	"brdf": "lambert",
+    	"user_for_ambient" : true
+    },
+    {
+    	"__type__": "brdf_color_texture_material",
+    	"name": "billiard_n2_bilinear",
+    	"color_texture": "billiard_n2",
+    	"texture_filtering": "bilinear",
+    	"brdfParams" : { },
+    	"brdf": "lambert",
+    	"user_for_ambient" : true
+    },
+    {
+    	"__type__": "brdf_color_texture_material",
+    	"name": "billiard_n1_bilinear",
+    	"color_texture": "billiard_n1",
+    	"texture_filtering": "bilinear",
+    	"brdfParams" : { },
+    	"brdf": "lambert",
+    	"user_for_ambient" : true
+    },
+    {
+    	"__type__": "brdf_color_texture_material",
+    	"name": "billiard_n4_bilinear",
+    	"color_texture": "billiard_n4",
+    	"texture_filtering": "bilinear",
+    	"brdfParams" : { },
+    	"brdf": "lambert",
+    	"user_for_ambient" : true
+    },
+    {
+    	"__type__": "brdf_color_texture_material",
+    	"name": "billiard_n6_bilinear",
+    	"color_texture": "billiard_n6",
+    	"texture_filtering": "bilinear",
+    	"brdfParams" : { },
+    	"brdf": "lambert",
+    	"user_for_ambient" : true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "bricks_blinn_phong_bilinear",
+      "color_texture": "bricks_SPEC",
+	  "texture_filtering": "bilinear",
+      "brdfParams": {
+		"shininess": 100
+	  },
+      "brdf": "blinnPhong"
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "chess_lambert_bilinear",
+      "color_texture": "chess",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+    {
+      "__type__": "reflective_material",
+      "name": "white_glossy_mirror",
+      "color": [ 1, 1, 1 ],
+      "glossyFactor": 0.1
+    }
+
+  ],
+  "textures": 
+  [
+    {
+      "__type__": "color_texture",
+      "name": "earth",
+      "file_path": "textures/earthmap.jpg"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "red",
+      "file_path": "textures/red.png"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "bricks",
+      "file_path": "textures/bricks.jpg"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "bricks_SPEC",
+      "file_path": "textures/bricks_SPEC.jpg"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "chess",
+      "file_path": "textures/chess.png"
+
+    },
+    {
+    	"__type__": "color_texture",
+    	"name" : "poolTable",
+    	"file_path" : "textures/pooltable.jpg"
+    },
+    {
+    	"__type__": "color_texture",
+    	"name" : "billiard_n2",
+    	"file_path" : "textures/billiard_n2.jpg"
+    },
+    {
+    	"__type__": "color_texture",
+    	"name" : "billiard_n1",
+    	"file_path" : "textures/billiard_n1.jpg"
+    },
+    {
+    	"__type__": "color_texture",
+    	"name" : "billiard_n4",
+    	"file_path" : "textures/billiard_n4.jpg"
+    },
+    {
+    	"__type__": "color_texture",
+    	"name" : "billiard_n6",
+    	"file_path" : "textures/billiard_n6.jpg"
+    }
+
+  ]
+}

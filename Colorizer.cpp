@@ -45,7 +45,6 @@ Color Colorizer::get_indirect_color(const SceneObject &obj, const RayCastHit &ra
   if(obj.brdfMats.size()){
     auto curMat = obj.brdfMats[0];
     Color diffuseColor = curMat->get_diffuse_color(rayHit);
-    std::cout << diffuseColor.to_Vec3().to_string() << std::endl;
     Vec3 ranDir = Utils::get_rand_dir(rayHit.normal).normalize();
     Ray diffuseRay = Ray(rayHit.hitPos + ranDir * eps, ranDir);
     RayCastHit hit;
